@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>沥青路面结构设计</title>
+    <meta name="description" content="沥青路面结构设计">
+    <meta name="keywords" content="沥青路面结构设计">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style type="text/css">
+        .form2{
+            /*position: relative;*/
+            top: 70px;
+            bottom: 0px;
+            left: 10px;
+            right: 10px;
+            padding: 0;
+            width:545px;
+            /*height:300px*/
+        }
+        .box {
+            position: relative;
+            border-radius: 3px;
+            background: #ffffff;
+            border-top: 3px solid #3c8dbc;
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            height: 670px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="hold-transition">
+
+    <div id="app">
+
+        <div class="content-header">
+            <h1>一般交通参数<!--<small>检查项管理</small>--></h1>
+            <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+                <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+                <el-breadcrumb-item>一般交通参数</el-breadcrumb-item>
+<!--                <el-breadcrumb-item>检查项管理</el-breadcrumb-item>-->
+            </el-breadcrumb>
+        </div>
+        <div class="app-container">
+            <div class="box">
+                <!-- 新增标签弹层 -->
+
+    <!--        <el-dialog title="新增检查项" :visible.sync="dialogFormVisible">-->
+                <el-form class="form2" ref="trafficFormData" :model="trafficFormData" :rules="rules" label-position="right" label-width="135px">
+                    <!--隐藏域，提交id-->
+                    <input type="hidden" name="id" value="${trafficFormData.id}">
+                    <el-row>
+                        <el-form-item label="AADTT(辆/日)" prop="aadtt">
+                            <el-input v-model="trafficFormData.aadtt"/>
+<!--                            <el-input type="age" v-model.number="trafficFormData.aadtt" autocomplete="off"></el-input>-->
+                        </el-form-item>
+                    </el-row>
+                    <el-row>
+                        <el-col>
+                            <el-form-item label="交通增长率(%)" prop="growthRate">
+<!--                                <el-input v-model="trafficFormData.growthRate"/>-->
+                                <el-input type="age" v-model.number="trafficFormData.growthRate" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col>
+                            <el-form-item label="方向系数(%)" prop="directionCoefficient">
+<!--                                <el-input v-model="trafficFormData.directionCoefficient"/>-->
+                                <el-input type="age" v-model.number="trafficFormData.directionCoefficient" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col>
+                            <el-form-item label="车道系数(%)" prop="laneCoefficient">
+<!--                                <el-input v-model="trafficFormData.laneCoefficient"/>-->
+                                <el-input type="age" v-model.number="trafficFormData.laneCoefficient" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+<!--                    <el-row>-->
+<!--                        <el-form-item label="设计使用年限 (年)" prop="designLife">-->
+<!--&lt;!&ndash;                            <el-input v-model="trafficFormData.designLife"/>&ndash;&gt;-->
+<!--                            <el-input type="age" v-model.number="trafficFormData.designLife" autocomplete="off"></el-input>-->
+<!--                        </el-form-item>-->
+<!--                    </el-row>-->
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm('trafficFormData')">保存</el-button>
+                        <el-button @click="resetForm('trafficFormData')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+<!--                <div slot="footer" class="dialog-footer">-->
+<!--                    <el-button @click="dialogFormVisible = false">取消</el-button>-->
+<!--                    <el-button type="primary" @click="handleAdd()">确定</el-button>-->
+<!--                </div>-->
+
+
+    <!--        </el-dialog>-->
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+
+<script>
+var vue = new Vue({
+    el: '#app',
+    data(){
+        return{
+            trafficFormData: {//表单数据
+                id: '',
+                aadtt: '',
+                growthRate: '',
+                directionCoefficient: '',
+                laneCoefficient: '',
+                proId: ''
+            },
+            rules: {//校验规则
+                aadtt:[
+                    { required: true, message: '不能为空'},
+                    // { type: 'number', message: '必须为数字值'}, // 且不包括小数
+                    // { pattern: /^([0-9]|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])$/, message: '范围在0-255',trigger: 'blur'}
+                    /*
+                      范围0-255分析：
+                      0-9：      [0-9]
+                      10-99：    [1-9]\d
+                      100-199:   1\d\d
+                      200-249:   2[0-4]\d
+                      250-255:   25[0-5]
+                    */
+                ],
+                growthRate:[
+                    { required: true, message: '不能为空'},
+                    { type: 'number', message: '必须为数字值'}, // 且不包括小数
+                    { pattern: /^([0-9]|[1-4]\d|50)$/, message: '请输入在0-50之间的数值',trigger: 'blur'}
+                    /*
+                      范围0-255分析：
+                      0-9：      [0-9]
+                      10-99：    [1-9]\d
+                      100-199:   1\d\d
+                      200-249:   2[0-4]\d
+                      250-255:   25[0-5]
+                    */
+                ],
+                directionCoefficient:[
+                    { required: true, message: '不能为空'},
+                    { type: 'number', message: '必须为数字值'}, // 且不包括小数
+                    { pattern: /^([1-9]\d|100)$/, message: '请输入在10-100之间的数值',trigger: 'blur'}
+                    /*
+                      范围0-255分析：
+                      0-9：      [0-9]
+                      10-99：    [1-9]\d
+                      100-199:   1\d\d
+                      200-249:   2[0-4]\d
+                      250-255:   25[0-5]
+                    */
+                ],
+                laneCoefficient:[
+                    { required: true, message: '不能为空'},
+                    { type: 'number', message: '必须为数字值'}, // 且不包括小数
+                    { pattern: /^([1-9]\d|100)$/, message: '请输入在10-100之间的数值',trigger: 'blur'}
+                    /*
+                      范围0-255分析：
+                      0-9：      [0-9]
+                      10-99：    [1-9]\d
+                      100-199:   1\d\d
+                      200-249:   2[0-4]\d
+                      250-255:   25[0-5]
+                    */
+                ]
+            }
+        };
+    },
+
+    // //钩子函数，VUE对象初始化完成后自动执行
+    // created() {
+    // },
+
+    mounted(){
+        //当页面加载完成后，发送异步请求，获取数据
+        // var _this = this;
+        // alert("mounted")
+        this.trafficFormData.id = localStorage.getItem("key");
+        axios({
+            method:"get",
+            url:"http://localhost:8080/traffic/list/"+this.trafficFormData.id,
+        }).then((resp) => {
+            if (resp.data != null){
+                this.trafficFormData = resp.data.data;
+            }
+        })
+    },
+
+    methods: {
+
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    alert('submit!');
+                    // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                    // console.log(this.trafficFormData);
+                    axios({
+                        method:"post",
+                        url:"http://localhost:8080/traffic/save",
+                        data:this.trafficFormData
+                    }).then( (resp) => {
+                        //响应数据的处理逻辑
+                        if(resp.data == "success"){
+                            //添加成功
+                            //关闭窗口
+                            this.$message({
+                                message: '恭喜你，添加成功',
+                                type: 'success'
+                            });
+                        }else if (resp.data == "update success"){
+                            this.$message({
+                                message: '恭喜你，修改成功',
+                                type: 'success'
+                            });
+                        }
+                    })
+
+                } else {
+                    console.log('error submit!!');
+                    return false;
+                }
+            });
+        },
+        resetForm(formName) {
+            this.$refs[formName].resetFields();
+        },
+        //编辑
+        handleEdit() {
+        },
+        //添加
+        handleAdd () {
+        },
+        //分页查询
+        findPage() {
+        },
+        // // 重置表单
+        // resetForm() {
+        // },
+        // 弹出添加窗口
+        handleCreate() {
+        },
+        // 弹出编辑窗口
+        handleUpdate(row) {
+        },
+        //切换页码
+        handleCurrentChange(currentPage) {
+        },
+        // 删除
+        handleDelete(row) {
+        }
+    }
+})
+</script>
+
+</html>

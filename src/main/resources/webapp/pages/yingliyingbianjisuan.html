@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>沥青路面结构设计</title>
+    <meta name="description" content="沥青路面结构设计">
+    <meta name="keywords" content="沥青路面结构设计">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style type="text/css">
+        .el-input__inner{
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+        <h1>应力应变计算</h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>应力应变计算</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <div class="app-container">
+        <div class="box">
+
+            <h2>荷载参数</h2>
+            <el-form ref="dataForm" :model="hzcs" :rules="rules" label-position="right" label-width="140px">
+                <el-row>
+
+                    <el-col :span="8">
+                        <el-form-item prop="radio">
+                            <el-radio v-model="hzcs.radio" label="0">双圆荷载</el-radio>
+                            <el-radio v-model="hzcs.radio" label="1">单圆荷载</el-radio>
+                        </el-form-item>
+                    </el-col>
+
+                    <el-col :span="6">
+                        <el-form-item label="荷载半径（cm）：" prop="hzbj">
+                            <el-input v-model="hzcs.hzbj" style="width: 150px"/>
+                        </el-form-item>
+                    </el-col>
+
+                    <el-col :span="10">
+                        <el-form-item label="荷载（MPa）：" prop="hz">
+                            <el-input v-model="hzcs.hzbj" style="width: 150px"/>
+                        </el-form-item>
+                    </el-col>
+
+                </el-row>
+            </el-form>
+            <hr>
+
+            <h2>结构层</h2>
+            <div>
+                <el-form
+                        :model="dataProportion"
+                        ref="dataProportion"
+                        label-width="10px"
+                        class="demo-ruleForm">
+
+                    <el-form-item>
+
+                        <el-row>
+
+                            <el-button type="primary" plain @click="handleAdd($event)" >添加</el-button>
+
+                            <el-button type="danger" plain @click="handleDelete(multipleSelection,$event)">删除</el-button>
+                        </el-row>
+
+
+                        <el-table
+                                :data="dataProportion.moduleList" ref="topictable" border stripe :max-height="tableHeight"
+                                :row-style="{height:0+'px'}" :cell-style="{padding:3+'px'}"
+                                row-key="Id"  class="tableBox"
+                                :tree-props="{children: 'children'}" :header-cell-style="{background:'#50a2e2',color:'#fff'}" @selection-change="handleSelectionChange">
+                            <!-- 展开列 -->
+
+                            <!-- 索引列 -->
+                            <!--                                <el-table-column type="index" label="序号"></el-table-column>-->
+                            <el-table-column
+                                    type="selection"
+                                    width="55"
+                                    align="center">
+                            </el-table-column>
+
+
+                            <el-table-column class-name="proportion" label="厚度（mm）" align="center" >
+                                <template slot-scope="scope">
+                                    <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.thickness'" :rules="moduleListRules.thickness">
+                                        <el-input class="el-input" v-model="scope.row.thickness" placeholder=""/>
+                                    </el-form-item>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column class-name="proportion" label="模量（MPa）" align="center" >
+                                <template slot-scope="scope">
+                                    <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.modulus'" :rules="moduleListRules.modulus">
+                                        <el-input class="el-input" v-model="scope.row.modulus" placeholder=""/>
+                                    </el-form-item>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column class-name="proportion" label="泊松比" align="center" >
+                                <template slot-scope="scope">
+                                    <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.poissonRatio'" :rules="moduleListRules.poissonRatio">
+                                        <el-input class="el-input" v-model="scope.row.poissonRatio" placeholder=""/>
+                                    </el-form-item>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column label="层间状态" show-overflow-tooltip align="center">
+                                <template slot-scope="scope">
+                                    <el-radio-group v-model="scope.row.cengjian" :prop="'moduleList.' + scope.$index + '.cengjian'">
+                                        <el-radio :label="1">连续</el-radio>
+                                        <el-radio :label="2">光滑</el-radio>
+                                    </el-radio-group>
+                                </template>
+                            </el-table-column>
+
+<!--                            <el-table-column label="层间状态" show-overflow-tooltip align="center">-->
+<!--                                <template slot-scope="scope">-->
+<!--                                    <el-radio-group v-model="scope.row.HandleState" @change="agreeChange(scope.row.HandleState)">-->
+<!--                                        <el-radio :label="1">连续</el-radio>-->
+<!--                                        <el-radio :label="2">光滑</el-radio>-->
+<!--                                    </el-radio-group>-->
+<!--                                </template>-->
+<!--                            </el-table-column>-->
+
+
+                            <el-table-column class-name="proportion" label="计算该层" align="center">
+                                <template slot-scope="scope">
+                                    <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.jisuangaiceng'" :rules="moduleListRules.jisuangaiceng">
+                                        <el-checkbox v-model="scope.row.checked"></el-checkbox>
+                                    </el-form-item>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column class-name="proportion" label="材料选择" align="center" >
+                                <template slot-scope="scope">
+                                    <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.materialType'">
+<!--                                        <el-button type="primary" v-model="scope.row.materialType" plain size="small" @click=handleUpdate(scope.row)>选择</el-button>-->
+                                        <el-select v-model="scope.row.materialType" placeholder="请选择">
+                                            <el-option
+                                                    v-for="item in options"
+                                                    :key="item.value"
+                                                    :label="item.label"
+                                                    :value="item.value">
+                                            </el-option>
+                                        </el-select>
+
+                                    </el-form-item>
+                                </template>
+                            </el-table-column>
+
+
+                        </el-table>
+                    </el-form-item>
+
+<!--                    隐藏表格-->
+                    <div>
+                        <el-form
+                                :model="dataList"
+                                ref="ruleForm"
+                                label-width="10px"
+                                class="demo-ruleForm">
+                            <el-form-item v-if="this.flag">
+                                <el-table
+                                        :data="dataList.moduleList" ref="topictable" border stripe
+                                        :row-style="{height:0+'px'}" :cell-style="{padding:3+'px'}"
+                                        row-key="Id" class="tableBox"
+                                        :tree-props="{children: 'children'}"
+                                        :header-cell-style="{background:'#50a2e2',color:'#fff'}">
+                                    <!-- 展开列 -->
+
+
+                                    <el-table-column class-name="num" label="序号" align="center">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.num'"
+                                                          :rules="moduleListRules.num">
+                                                <el-input class="el-input" v-model="scope.row.num"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="deepth" label="深度" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.deepth'"
+                                                          :rules="moduleListRules.deepth">
+                                                <el-input class="el-input" v-model="scope.row.deepth"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="deflection" label="弯沉" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.deflection'"
+                                                          :rules="moduleListRules.deflection">
+                                                <el-input class="el-input" v-model="scope.row.deflection"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="lylA" label="拉应力A" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.lylA'"
+                                                          :rules="moduleListRules.lylA">
+                                                <el-input class="el-input" v-model="scope.row.lylA"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="lylB" label="拉应力B" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.lylB'"
+                                                          :rules="moduleListRules.lylB">
+                                                <el-input class="el-input" v-model="scope.row.lylB"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="lylC" label="拉应力C" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.lylC'"
+                                                          :rules="moduleListRules.lylC">
+                                                <el-input class="el-input" v-model="scope.row.lylC"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="lylD" label="拉应力D" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.lylD'"
+                                                          :rules="moduleListRules.lylD">
+                                                <el-input class="el-input" v-model="scope.row.lylD"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="lybA" label="拉应变A" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.lybA'"
+                                                          :rules="moduleListRules.lybA">
+                                                <el-input class="el-input" v-model="scope.row.lybA"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="lybB" label="拉应变B" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.lybB'"
+                                                          :rules="moduleListRules.lybB">
+                                                <el-input class="el-input" v-model="scope.row.lybB"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column class-name="lybC" label="拉应变C" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.lybC'"
+                                                          :rules="moduleListRules.lybC">
+                                                <el-input class="el-input" v-model="scope.row.lybC"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="lybD" label="拉应变D" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.lybD'"
+                                                          :rules="moduleListRules.lybD">
+                                                <el-input class="el-input" v-model="scope.row.lybD"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="yylA" label="压应力A" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.yylA'"
+                                                          :rules="moduleListRules.yylA">
+                                                <el-input class="el-input" v-model="scope.row.yylA"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="yylB" label="压应力B" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.yylB'"
+                                                          :rules="moduleListRules.yylB">
+                                                <el-input class="el-input" v-model="scope.row.yylB"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="yylC" label="压应力C" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.yylC'"
+                                                          :rules="moduleListRules.yylC">
+                                                <el-input class="el-input" v-model="scope.row.yylC"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="yylD" label="压应力D" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.yylD'"
+                                                          :rules="moduleListRules.yylD">
+                                                <el-input class="el-input" v-model="scope.row.yylD"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="yybA" label="压应变A" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.yybA'"
+                                                          :rules="moduleListRules.yybA">
+                                                <el-input class="el-input" v-model="scope.row.yybA"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="yybB" label="压应变B" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.yybB'"
+                                                          :rules="moduleListRules.yybB">
+                                                <el-input class="el-input" v-model="scope.row.yybB"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="yybC" label="压应变C" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.yybC'"
+                                                          :rules="moduleListRules.yybC">
+                                                <el-input class="el-input" v-model="scope.row.yybC"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="yybD" label="压应变D" align="center" width="100">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px"
+                                                          :prop="'moduleList.' + scope.$index + '.yybD'"
+                                                          :rules="moduleListRules.yybD">
+                                                <el-input class="el-input" v-model="scope.row.yybD"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+
+                                </el-table>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+
+
+                    <!--保存重置按钮-->
+                    <el-form-item>
+                        <el-button type="primary" @click="calculating()">计算</el-button>
+<!--                        <el-button type="primary" @click="submitForm('dataProportion','dataProportion')">保存</el-button>-->
+<!--                        <el-button @click="resetForm('dataProportion')">重置</el-button>-->
+                    </el-form-item>
+
+                </el-form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: '#app',
+        data(){
+            return {
+                //结构层表格，被选中的行
+                multipleSelection: [],
+                // table高度
+                tableHeight: null,
+                flag:false,
+
+                hzcs:{
+                  radio:'',
+                  hzbj:'',
+                  hz:''
+                },
+
+                options: [{
+                    value: '1',
+                    label: 'AC'
+                }, {
+                    value: '2',
+                    label: 'EME'
+                }, {
+                    value: '3',
+                    label: 'SMA'
+                }, {
+                    value: '4',
+                    label: 'LSPM'
+                }, {
+                    value: '5',
+                    label: 'CTB'
+                }, {
+                    value: '6',
+                    label: 'CTB'
+                }, {
+                    value: '7',
+                    label: 'GB'
+                }, {
+                    value: '8',
+                    label: '级配碎石'
+                }, {
+                    value: '9',
+                    label: '沥青胶砂'
+                }, {
+                    value: '10',
+                    label: '土基'
+                }],
+
+                dialogFormVisible: false,
+
+                dataList: {
+                    // 显示隐藏表格数据
+                    moduleList: [{
+                        num:'1', deepth:'0', deflection:'16.5',
+                        lylA:'', lylB:'', lylC:'', lylD:'', lybA:'', lybB:'', lybC:'', lybD:'',
+                        yylA:'', yylB:'', yylC:'', yylD:'', yybA:'', yybB:'', yybC:'', yybD:''
+                    },{
+                        num:'2', deepth:'60', deflection:'16.3',
+                        lylA:'', lylB:'', lylC:'', lylD:'', lybA:'', lybB:'', lybC:'', lybD:'',
+                        yylA:'', yylB:'', yylC:'', yylD:'', yybA:'', yybB:'', yybC:'', yybD:''
+                    },{
+                        num:'3', deepth:'120', deflection:'16.1',
+                        lylA:'', lylB:'', lylC:'', lylD:'', lybA:'', lybB:'', lybC:'', lybD:'',
+                        yylA:'', yylB:'', yylC:'', yylD:'', yybA:'', yybB:'', yybC:'', yybD:''
+                    },{
+                        num:'4', deepth:'200', deflection:'15.9',
+                        lylA:'', lylB:'', lylC:'', lylD:'', lybA:'', lybB:'', lybC:'', lybD:'',
+                        yylA:'', yylB:'', yylC:'', yylD:'', yybA:'', yybB:'', yybC:'', yybD:''
+                    },{
+                        num:'5', deepth:'300', deflection:'15.8',
+                        lylA:'', lylB:'', lylC:'', lylD:'', lybA:'', lybB:'', lybC:'', lybD:'',
+                        yylA:'', yylB:'', yylC:'', yylD:'', yybA:'', yybB:'', yybC:'', yybD:''
+                    },{
+                        num:'6', deepth:'400', deflection:'15.5',
+                        lylA:'', lylB:'', lylC:'', lylD:'', lybA:'', lybB:'', lybC:'', lybD:'',
+                        yylA:'', yylB:'', yylC:'', yylD:'', yybA:'', yybB:'', yybC:'', yybD:''
+                    }]
+                },
+
+                //
+                dataProportion: {
+                    // 日志列表
+                    moduleList: [{
+                        thickness:'',
+                        poissonRatio: '',
+                        modulus: '',
+                        cengjian:'',
+                        jisuangaiceng:'',
+                        materialType:''
+                    },{
+                        thickness:'',
+                        poissonRatio: '',
+                        modulus: '',
+                        cengjian:'',
+                        jisuangaiceng:'',
+                        materialType:''
+                    },{
+                        thickness:'',
+                        poissonRatio: '',
+                        modulus: '',
+                        cengjian:'',
+                        jisuangaiceng:'',
+                        materialType:''
+                    },{
+                        thickness:'',
+                        poissonRatio: '',
+                        modulus: '',
+                        cengjian:'',
+                        jisuangaiceng:'',
+                        materialType:''
+                    },{
+                        thickness:'',
+                        poissonRatio: '',
+                        modulus: '',
+                        cengjian:'',
+                        jisuangaiceng:'',
+                        materialType:''
+                    }]
+                },
+                moduleListRules: {
+                    thickness: [{ required: true, message: '请输入合理系数', trigger: 'blur' }],
+                    poissonRatio: [{ required: true, message: '请输入合理系数', trigger: 'blur' }],
+                    modulus: [{ required: true, message: '请输入合理比例', trigger: 'blur' }],
+                    cengjian: [{ required: true, message: '请输入合理比例', trigger: 'blur' }],
+
+                },
+                queryData:[{type2:''},{type3:''},{type4:''},{type5:''},{type6:''},
+                    {type7:''},{type8:''},{type9:''},{type10:''},{type11:''}],
+
+            }
+
+        },
+        // mounted(){
+        //     //当页面加载完成后，发送异步请求，获取数据
+        //     // var _this = this;
+        //     alert("mounted")
+        //     axios({
+        //         method:"get",
+        //         url:"http://localhost:8080/asphalt-demo1/vehicleDistribute/selectById?proId=1"
+        //     }).then((resp) => {
+        //         if (resp.data != null){
+        //             this.queryData = resp.data;
+        //             //console.log(this.queryData);
+        //             //console.log(this.dataList.moduleList)
+        //             this.dataTrans();
+        //         }
+        //     })
+        // },
+
+        methods: {
+            // 提交表单
+            submitForm(formName,dataList) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        alert('submit!');
+                        // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                        // console.log(this.moduleList);
+                        axios({
+                            method:"post",
+                            url:"http://localhost:8080/asphalt-demo1/vehicleDistribute/add",
+                            data:this.dataList // 需要改动
+                        }).then( (resp) => {
+                            //响应数据的处理逻辑
+                            if(resp.data == "success"){
+                                //添加成功
+                                //关闭窗口
+                                this.$message({
+                                    message: '恭喜你，添加成功',
+                                    type: 'success'
+                                });
+                            }else if (resp.data == "update success"){
+                                this.$message({
+                                    message: '恭喜你，修改成功',
+                                    type: 'success'
+                                });
+                            }
+                        })
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            // 重置表单
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+            calculating(){
+                for(let i=0;i<6;i++){
+                    this.dataList.moduleList[i].lylA = Math.random();
+                    this.dataList.moduleList[i].lylB = Math.random();
+                    this.dataList.moduleList[i].lylC = Math.random();
+                    this.dataList.moduleList[i].lylD = Math.random();
+                    this.dataList.moduleList[i].lybA = Math.random();
+                    this.dataList.moduleList[i].lybB = Math.random();
+                    this.dataList.moduleList[i].lybC = Math.random();
+                    this.dataList.moduleList[i].lybD = Math.random();
+                    this.dataList.moduleList[i].yylA = Math.random();
+                    this.dataList.moduleList[i].yylB = Math.random();
+                    this.dataList.moduleList[i].yylC = Math.random();
+                    this.dataList.moduleList[i].yylD = Math.random();
+                    this.dataList.moduleList[i].yybA = Math.random();
+                    this.dataList.moduleList[i].yybB = Math.random();
+                    this.dataList.moduleList[i].yybC = Math.random();
+                    this.dataList.moduleList[i].yybD = Math.random();
+                }
+                this.flag = true;
+            },
+            //结构层表单删除多行
+            handleDelete(rows,event){
+                for (let i = 0; i < rows.length; i++) {
+                        let index = this.dataProportion.moduleList.indexOf(rows[i]);
+                        if (index !== -1) {
+                        this.dataProportion.moduleList.splice(index, 1);
+                        }
+                }
+                //让button失去焦点恢复颜色
+                 if (event.target.nodeName === 'SPAN') {
+                        event.target.parentNode.blur()
+                 } else {
+                        event.target.blur()
+                 }
+            },
+            //结构层表单添加一行
+            handleAdd(event){
+                this.dataProportion.moduleList.push({
+                        thickness:'',
+                        poissonRatio: '',
+                        modulus: '',
+                        cengjian:'',
+                        jisuangaiceng:'',
+                        materialType:''
+                });
+                //让button失去焦点恢复颜色
+                if (event.target.nodeName === 'SPAN') {
+                    event.target.parentNode.blur()
+                } else {
+                    event.target.blur()
+                }
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            }
+
+        },
+
+    })
+</script>
+
+</html>

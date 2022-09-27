@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>沥青路面结构设计</title>
+    <meta name="description" content="沥青路面结构设计">
+    <meta name="keywords" content="沥青路面结构设计">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style type="text/css">
+
+
+    </style>
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+        <h1>结构与材料参数</h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>结构与材料参数</el-breadcrumb-item>
+            <!--                            <el-breadcrumb-item>车辆类型分布系数</el-breadcrumb-item>-->
+        </el-breadcrumb>
+    </div>
+    <div class="app-container">
+        <div class="box">
+            <el-collapse v-model="activeName">
+                <el-collapse-item name="1">
+                    <template slot="title">
+                        <i class="el-icon-success"></i><h2>面层</h2>
+                    </template>
+                    <div>
+                        <!--按钮-->
+                        <el-row>
+                            <el-button type="danger" plain size="small">批量删除</el-button>
+<!--                            <el-button type="primary" plain size="small" @click="dialogFormVisible = true">新增-->
+                            <el-button type="primary" plain size="small" @click=handleCreate()>新增
+                            </el-button>
+                            <!--                            <el-button type="primary" plain size="small" @click="dialogVisible4Edit = true">编辑</el-button>-->
+                        </el-row>
+                        <br>
+
+                        <!-- 新增标签弹层 -->
+                        <!-- 面层 -->
+                        <div class="add-form">
+                            <el-dialog title="添加结构与材料层参数" :visible.sync="dialogFormVisible" width="40%">
+                                <el-form ref="dataAddForm" :model="formStructural" :rules="rules" label-position="right"
+                                         label-width="150px" style="width: 450px">
+                                    <el-row>
+
+                                        <el-form-item label="层位" prop="horizon">
+<!--                                            <el-input placeholder="面层" disabled="false"/>-->
+                                            <el-select v-model="formStructural.horizon" placeholder="面层">
+                                                <el-option label="面层" value="1"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="材料类型" prop="materialType">
+                                            <el-select v-model="formStructural.materialType" placeholder="沥青结合料类材料">
+                                                <el-option label="沥青结合料类材料" value="1"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="名称" prop="materialName">
+                                            <el-input v-model="formStructural.materialName"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="厚度（mm）" prop="thickness">
+                                            <el-input v-model="formStructural.thickness"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="泊松比" prop="poissonRatio">
+                                            <el-input v-model="formStructural.poissonRatio"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="模量（MPa）" prop="modulus">
+                                            <el-input v-model="formStructural.modulus"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="项目说明">
+                                            <el-input v-model="formStructural.description" type="textarea"></el-input>
+                                        </el-form-item>
+
+                                    </el-row>
+
+                                </el-form>
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="dialogFormVisible = false">取消</el-button>
+                                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                                </div>
+                            </el-dialog>
+                        </div>
+
+
+                        <!--表格-->
+                        <template>
+                            <!--结构表格-->
+                            <el-table size="small" current-row-key="id" :data="tableStructural"
+                                      stripe border :header-cell-style="{background:'#50a2e2',color:'#fff'}"
+                                      highlight-current-row @selection-change="handleSelectionChange">
+                                <el-table-column
+                                        type="selection"
+                                        width="55">
+                                </el-table-column>
+                                <el-table-column
+                                        type="index"
+                                        label="序号"
+                                        width="50">
+                                </el-table-column>
+
+                                <el-table-column
+                                        prop="horizon"
+                                        label="层位"
+                                        align="center"
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="materialType"
+                                        label="材料类型"
+                                        align="center"
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="materialName"
+                                        align="center"
+                                        label="名称">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="thickness"
+                                        align="center"
+                                        label="厚度（mm）">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="poissonRatio"
+                                        align="center"
+                                        label="泊松比">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="modulus"
+                                        align="center"
+                                        label="模量（MPa）">
+                                </el-table-column>
+
+
+                                <el-table-column label="操作" align="center">
+                                    <template slot-scope="scope">
+                                        <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑
+                                        </el-button>
+                                        <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </div>
+                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                </el-collapse-item>
+
+            </el-collapse>
+        </div>
+
+        <div class="box">
+            <el-collapse v-model="activeName">
+                <el-collapse-item name="2">
+                    <template slot="title">
+                        <i class="el-icon-success"></i><h2>基层</h2>
+                    </template>
+                    <div>
+                        <!--按钮-->
+                        <el-row>
+                            <el-button type="danger" plain size="small">批量删除</el-button>
+                            <el-button type="primary" plain size="small" @click=handleCreate2()>新增
+                            </el-button>
+                            <!--                            <el-button type="primary" plain size="small" @click="dialogVisible4Edit = true">编辑</el-button>-->
+                        </el-row>
+                        <br>
+
+                        <!-- 新增标签弹层 -->
+                        <div class="add-form">
+                            <el-dialog title="添加结构与材料层参数" :visible.sync="dialogFormVisible2" width="40%">
+                                <el-form ref="dataAddForm" :model="formStructural" :rules="rules" label-position="right"
+                                         label-width="150px" style="width: 450px">
+                                    <el-row>
+                                        <el-form-item label="层位" prop="horizon">
+                                        <el-select v-model="formStructural.horizon" placeholder="基层">
+                                            <el-option label="基层" value="2"></el-option>
+                                        </el-select>
+                                        </el-form-item>
+                                    </el-row>
+
+                                    <el-row>
+
+                                        <el-form-item label="材料类型" prop="materialType">
+                                            <el-select v-model="formStructural.materialType">
+                                                <el-option label="沥青结合料类材料" value="1"></el-option>
+                                                <el-option label="无机结合料类型材料" value="2"></el-option>
+                                                <el-option label="粒料类材料" value="3"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="名称" prop="materialName">
+                                            <el-input v-model="formStructural.materialName"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="厚度（mm）" prop="thickness">
+                                            <el-input v-model="formStructural.thickness"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="泊松比" prop="poissonRatio">
+                                            <el-input v-model="formStructural.poissonRatio"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="模量（MPa）" prop="modulus">
+                                            <el-input v-model="formStructural.modulus"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="项目说明">
+                                            <el-input v-model="formStructural.description" type="textarea"></el-input>
+                                        </el-form-item>
+
+                                    </el-row>
+
+                                </el-form>
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="dialogFormVisible2 = false">取消</el-button>
+                                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                                </div>
+                            </el-dialog>
+                        </div>
+
+
+                        <!--表格-->
+                        <template>
+                            <!--结构表格-->
+                            <el-table size="small" current-row-key="id" :data="tableStructural2"
+                                      stripe border :header-cell-style="{background:'#50a2e2',color:'#fff'}"
+                                      highlight-current-row @selection-change="handleSelectionChange">
+                                <el-table-column
+                                        type="selection"
+                                        width="55">
+                                </el-table-column>
+                                <el-table-column
+                                        type="index"
+                                        label="序号"
+                                        width="50">
+                                </el-table-column>
+
+                                <el-table-column
+                                        prop="horizon"
+                                        label="层位"
+                                        align="center"
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="materialType"
+                                        label="材料类型"
+                                        align="center"
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="materialName"
+                                        align="center"
+                                        label="名称">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="thickness"
+                                        align="center"
+                                        label="厚度（mm）">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="poissonRatio"
+                                        align="center"
+                                        label="泊松比">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="modulus"
+                                        align="center"
+                                        label="模量（MPa）">
+                                </el-table-column>
+
+
+                                <el-table-column label="操作" align="center">
+                                    <template slot-scope="scope">
+                                        <el-button type="primary" size="mini" @click="handleUpdate2(scope.row)">编辑
+                                        </el-button>
+                                        <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </div>
+                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                </el-collapse-item>
+
+            </el-collapse>
+        </div>
+
+        <div class="box">
+            <el-collapse v-model="activeName">
+                <el-collapse-item name="3">
+                    <template slot="title">
+                        <i class="el-icon-success"></i> <h2>底基层</h2>
+                    </template>
+                    <div>
+                        <!--按钮-->
+                        <el-row>
+                            <el-button type="danger" plain size="small">批量删除</el-button>
+                            <el-button type="primary" plain size="small" @click=handleCreate3()>新增
+                            </el-button>
+                            <!--                            <el-button type="primary" plain size="small" @click="dialogVisible4Edit = true">编辑</el-button>-->
+                        </el-row>
+                        <br>
+
+                        <!-- 新增标签弹层 -->
+                        <div class="add-form">
+                            <el-dialog title="添加结构与材料层参数" :visible.sync="dialogFormVisible3" width="40%">
+                                <el-form ref="dataAddForm" :model="formStructural" :rules="rules" label-position="right"
+                                         label-width="150px" style="width: 450px">
+                                    <el-row>
+                                        <el-form-item label="层位" prop="horizon">
+                                        <el-select v-model="formStructural.horizon" placeholder="底基层">
+                                            <el-option label="底基层" value="3"></el-option>
+                                        </el-select>
+                                        </el-form-item>
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="材料类型" prop="materialType">
+                                            <el-select v-model="formStructural.materialType">
+                                                <el-option label="沥青结合料类材料" value="1"></el-option>
+                                                <el-option label="无机结合料类型材料" value="2"></el-option>
+                                                <el-option label="粒料类材料" value="3"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="名称" prop="materialName">
+                                            <el-input v-model="formStructural.materialName"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="厚度（mm）" prop="thickness">
+                                            <el-input v-model="formStructural.thickness"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="泊松比" prop="poissonRatio">
+                                            <el-input v-model="formStructural.poissonRatio"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="模量（MPa）" prop="modulus">
+                                            <el-input v-model="formStructural.modulus"/>
+                                        </el-form-item>
+
+                                    </el-row>
+                                    <el-row>
+
+                                        <el-form-item label="项目说明">
+                                            <el-input v-model="formStructural.description" type="textarea"></el-input>
+                                        </el-form-item>
+
+                                    </el-row>
+
+                                </el-form>
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="dialogFormVisible3 = false">取消</el-button>
+                                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                                </div>
+                            </el-dialog>
+                        </div>
+
+
+                        <!--表格-->
+                        <template>
+                            <!--结构表格-->
+                            <el-table size="small" current-row-key="id" :data="tableStructural3"
+                                      stripe border :header-cell-style="{background:'#50a2e2',color:'#fff'}"
+                                      highlight-current-row @selection-change="handleSelectionChange">
+                                <el-table-column
+                                        type="selection"
+                                        width="55">
+                                </el-table-column>
+                                <el-table-column
+                                        type="index"
+                                        label="序号"
+                                        width="50">
+                                </el-table-column>
+
+                                <el-table-column
+                                        prop="horizon"
+                                        label="层位"
+                                        align="center"
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="materialType"
+                                        label="材料类型"
+                                        align="center"
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="materialName"
+                                        align="center"
+                                        label="名称">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="thickness"
+                                        align="center"
+                                        label="厚度（mm）">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="poissonRatio"
+                                        align="center"
+                                        label="泊松比">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="modulus"
+                                        align="center"
+                                        label="模量（MPa）">
+                                </el-table-column>
+
+
+                                <el-table-column label="操作" align="center">
+                                    <template slot-scope="scope">
+                                        <el-button type="primary" size="mini" @click="handleUpdate3(scope.row)">编辑
+                                        </el-button>
+                                        <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </div>
+                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                </el-collapse-item>
+
+            </el-collapse>
+        </div>
+<!--路基层内容-->
+        <div class="box">
+            <el-collapse v-model="activeName">
+                <el-collapse-item name="4">
+                    <template slot="title">
+                        <i class="el-icon-success"></i><h2>路基</h2>
+                    </template>
+                    <div>
+
+                        <!--表格-->
+                        <template>
+                            <!--结构表格-->
+                            <el-table size="small" current-row-key="id" :data="tableStructural4"
+                                      stripe border :header-cell-style="{background:'#50a2e2',color:'#fff'}"
+                                      highlight-current-row @selection-change="handleSelectionChange">
+                                <el-table-column
+                                        type="selection"
+                                        width="55">
+                                </el-table-column>
+                                <el-table-column
+                                        type="index"
+                                        label="序号"
+                                        width="50">
+                                </el-table-column>
+
+                                <el-table-column
+                                        prop="horizon"
+                                        label="层位"
+                                        align="center"
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="materialType"
+                                        label="材料类型"
+                                        align="center"
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="materialName"
+                                        align="center"
+                                        label="名称">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="thickness"
+                                        align="center"
+                                        label="厚度（mm）">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="poissonRatio"
+                                        align="center"
+                                        label="泊松比">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="modulus"
+                                        align="center"
+                                        label="模量（MPa）">
+                                </el-table-column>
+
+
+                                <el-table-column label="操作" align="center">
+                                    <template slot-scope="scope">
+                                        <el-button type="primary" size="mini" @click="handleUpdate4(scope.row)">编辑
+                                        </el-button>
+                                        <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </div>
+                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                </el-collapse-item>
+
+            </el-collapse>
+        </div>
+
+
+        <!-- 编辑标签弹层 -->
+        <div class="add-form">
+            <el-dialog title="沥青结合料类材料参数信息" :visible.sync="dialogFormVisibleEdit">
+<!--            <el-dialog title="沥青结合料类材料参数信息" :visible.sync="dialogFormVisibleEdit" width="35%">-->
+                <el-form ref="dataAddForm" :model="formStructural" :rules="rules" label-position="right" label-width="220px" style="width: 550px">
+
+                    <el-row>
+<!--                        <el-form-item label="层位" prop="horizon">-->
+<!--                            <el-input placeholder="面层" disabled="false"/>-->
+<!--                        </el-form-item>-->
+                        <el-form-item label="层位" prop="horizon">
+                            <el-select v-model="formStructural.horizon" placeholder="面层">
+                                <el-option label="面层" value="1"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-row>
+
+
+                    <el-row>
+                        <el-form-item label="名称" prop="materialName">
+                            <el-input v-model="formStructural.materialName"/>
+                        </el-form-item>
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="厚度（mm）" prop="thickness">
+                            <el-input v-model="formStructural.thickness"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="泊松比" prop="poissonRatio">
+                            <el-input v-model="formStructural.poissonRatio"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="模量（MPa）" prop="modulus">
+                            <el-input v-model="formStructural.modulus"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+                        <el-form-item label="项目说明">
+                            <el-input v-model="formStructural.description" type="textarea"></el-input>
+                        </el-form-item>
+                    </el-row>
+
+                    <!--                                弹出框第二块内容-->
+                    <div>
+                        <hr>
+                        <div style="font-size: 20px">
+                            沥青混合料模量或相关参数
+                        </div>
+                        <el-form-item label="沥青层输入水平" prop="lqc_inputlevel">
+                            <el-select v-model="formStructural.lqc_inputlevel" placeholder="水平一">
+                                <el-option label="水平一" value="1"></el-option>
+                                <el-option label="水平二" value="2"></el-option>
+                                <el-option label="水平三" value="3"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                        <el-row v-if="formStructural.lqc_inputlevel==1">
+                            <el-form-item label="动态压缩模量实验结果（MPa）" prop="dtysml_1">
+                                <el-input v-model="formStructural.dtysml_1"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <div v-if="formStructural.lqc_inputlevel==2">
+                            <el-row>
+                                <el-form-item label="沥青混合料动态模量（MPa）" prop="lqhhldtml_2">
+                                    <el-input v-model="formStructural.lqhhldtml_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青动态剪切模量（MPa）" prop="lqdtjqml_2">
+                                    <el-input v-model="formStructural.lqdtjqml_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青混合料空隙率（%）" prop="lqhhlkxl_2">
+                                    <el-input v-model="formStructural.lqhhlkxl_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青混合料油石比（%）" prop="lqhhlysb_2">
+                                    <el-input v-model="formStructural.lqhhlysb_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="粗集料松装间隙率（%）" prop="cjlszjxl_2">
+                                    <el-input v-model="formStructural.cjlszjxl_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="频率（Hz）" prop="frequency_2">
+                                    <el-input v-model="formStructural.frequency_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                        </div>
+
+                        <el-row v-if="formStructural.lqc_inputlevel==3">
+                            <el-form-item label="沥青混合料动态模量（MPa）" prop="lqhhldtml_3">
+                                <el-input v-model="formStructural.lqhhldtml_3"/>
+                            </el-form-item>
+                        </el-row>
+                    </div>
+
+                    <!--编辑框的第三块内容-->
+                    <div>
+                        <hr>
+                        <div style="font-size: 20px">
+                            永久变形相关参数
+                        </div>
+                        <el-row>
+                            <el-form-item label="车辙试验试件的厚度（mm）" prop="chezhe_hd">
+                                <el-input v-model="formStructural.chezhe_hd"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="车辙试验永久变形量" prop="chezhe_yjbxl">
+                                <el-input v-model="formStructural.chezhe_yjbxl"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="沥青混合量的贯入强度" prop="lqhhl_grqd">
+                                <el-input v-model="formStructural.lqhhl_grqd"/>
+                            </el-form-item>
+                        </el-row>
+                    </div>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisibleEdit = false">取消</el-button>
+                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                </div>
+            </el-dialog>
+        </div>
+
+        <!-- 编辑标签弹层2 -->
+        <div class="add-form">
+<!--            <el-dialog title="结构与材料层参数信息" :visible.sync="dialogFormVisibleEdit2" width="35%">-->
+            <el-dialog title="结构与材料层参数信息" :visible.sync="dialogFormVisibleEdit2">
+                <el-form ref="dataAddForm" :model="formStructural" :rules="rules" label-position="right" label-width="220px" style="width: 550px">
+                    <el-row>
+                        <el-form-item label="层位" prop="horizon">
+                            <el-select v-model="formStructural.horizon" placeholder="基层">
+                                <el-option label="基层" value="2"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-row>
+
+                    <el-row>
+
+                        <el-form-item label="材料类型" prop="materialType">
+                            <el-select v-model="formStructural.materialType" placeholder="请选择材料类型">
+                                <el-option label="沥青结合料类材料" value="1"></el-option>
+                                <el-option label="无机结合料类型材料" value="2"></el-option>
+                                <el-option label="粒料类材料" value="3"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="名称" prop="materialName">
+                            <el-input v-model="formStructural.materialName"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="厚度（mm）" prop="thickness">
+                            <el-input v-model="formStructural.thickness"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="泊松比" prop="poissonRatio">
+                            <el-input v-model="formStructural.poissonRatio"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="模量（MPa）" prop="modulus">
+                            <el-input v-model="formStructural.modulus"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+                        <el-form-item label="项目说明">
+                            <el-input v-model="formStructural.description" type="textarea"></el-input>
+                        </el-form-item>
+                    </el-row>
+
+                    <!--                                弹出框第二块内容-->
+                    <div v-if="formStructural.materialType==1">
+                        <hr>
+                        <div style="font-size: 20px">
+                            沥青混合料模量或相关参数
+                        </div>
+                        <el-form-item label="沥青层输入水平" prop="lqc_inputlevel">
+                            <el-select v-model="formStructural.lqc_inputlevel" placeholder="水平一">
+                                <el-option label="水平一" value="1"></el-option>
+                                <el-option label="水平二" value="2"></el-option>
+                                <el-option label="水平三" value="3"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                        <el-row v-if="formStructural.lqc_inputlevel==1">
+                            <el-form-item label="动态压缩模量实验结果（MPa）" prop="dtysml_1">
+                                <el-input v-model="formStructural.dtysml_1"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <div v-if="formStructural.lqc_inputlevel==2">
+                            <el-row>
+                                <el-form-item label="沥青混合料动态模量（MPa）" prop="lqhhldtml_2">
+                                    <el-input v-model="formStructural.lqhhldtml_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青动态剪切模量（MPa）" prop="lqdtjqml_2">
+                                    <el-input v-model="formStructural.lqdtjqml_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青混合料空隙率（%）" prop="lqhhlkxl_2">
+                                    <el-input v-model="formStructural.lqhhlkxl_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青混合料油石比（%）" prop="lqhhlysb_2">
+                                    <el-input v-model="formStructural.lqhhlysb_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="粗集料松装间隙率（%）" prop="cjlszjxl_2">
+                                    <el-input v-model="formStructural.cjlszjxl_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="频率（Hz）" prop="frequency_2">
+                                    <el-input v-model="formStructural.frequency_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                        </div>
+
+
+                        <el-row v-if="formStructural.lqc_inputlevel==3">
+                            <el-form-item label="沥青混合料动态模量（MPa）" prop="lqhhldtml_3">
+                                <el-input v-model="formStructural.lqhhldtml_3"/>
+                            </el-form-item>
+                        </el-row>
+
+
+                    </div>
+
+                    <!--编辑框的第三块内容-->
+                    <div v-if="formStructural.materialType==1">
+                        <hr>
+                        <div style="font-size: 20px">
+                            永久变形相关参数
+                        </div>
+                        <el-row>
+                            <el-form-item label="车辙试验试件的厚度（mm）" prop="chezhe_hd">
+                                <el-input v-model="formStructural.chezhe_hd"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="车辙试验永久变形量" prop="chezhe_yjbxl">
+                                <el-input v-model="formStructural.chezhe_yjbxl"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="沥青混合量的贯入强度" prop="lqhhl_grqd">
+                                <el-input v-model="formStructural.lqhhl_grqd"/>
+                            </el-form-item>
+                        </el-row>
+                    </div>
+
+
+                    <!--粒料材料特有-->
+                    <div v-if="formStructural.materialType==3">
+                        <!--                                    分割线-->
+                        <hr>
+                        <div style="font-size: 20px">
+                            粒料材料模量
+                        </div>
+                        <el-row>
+                            <el-form-item label="粒料材料回弹模量（MPa）" prop="llclhtml">
+                                <el-input v-model="formStructural.llclhtml"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="湿度调整系数" prop="sdtzxs">
+                                <el-input v-model="formStructural.sdtzxs"/>
+                            </el-form-item>
+                        </el-row>
+
+                    </div>
+
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisibleEdit2 = false">取消</el-button>
+                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                </div>
+            </el-dialog>
+        </div>
+
+        <!-- 编辑标签弹层3 -->
+        <div class="add-form">
+            <el-dialog title="结构与材料层参数信息" :visible.sync="dialogFormVisibleEdit3">
+                <el-form ref="dataAddForm" :model="formStructural" :rules="rules" label-position="right" label-width="220px" style="width: 550px">
+
+                    <el-row>
+
+                        <el-form-item label="层位" prop="horizon">
+                            <el-select v-model="formStructural.horizon" placeholder="底基层">
+                                <el-option label="底基层" value="3"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="材料类型" prop="materialType">
+                            <el-select v-model="formStructural.materialType">
+                                <el-option label="沥青结合料类材料" value="1"></el-option>
+                                <el-option label="无机结合料类型材料" value="2"></el-option>
+                                <el-option label="粒料类材料" value="3"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="名称" prop="materialName">
+                            <el-input v-model="formStructural.materialName"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="厚度（mm）" prop="thickness">
+                            <el-input v-model="formStructural.thickness"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="泊松比" prop="poissonRatio">
+                            <el-input v-model="formStructural.poissonRatio"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+
+                        <el-form-item label="模量（MPa）" prop="modulus">
+                            <el-input v-model="formStructural.modulus"/>
+                        </el-form-item>
+
+                    </el-row>
+                    <el-row>
+                        <el-form-item label="项目说明">
+                            <el-input v-model="formStructural.description" type="textarea"></el-input>
+                        </el-form-item>
+                    </el-row>
+
+                    <!--                                弹出框第二块内容-->
+                    <div v-if="formStructural.materialType==1">
+                        <hr>
+                        <div style="font-size: 20px">
+                            沥青混合料模量或相关参数
+                        </div>
+                        <el-form-item label="沥青层输入水平" prop="lqc_inputlevel">
+                            <el-select v-model="formStructural.lqc_inputlevel" placeholder="水平一">
+                                <el-option label="水平一" value="1"></el-option>
+                                <el-option label="水平二" value="2"></el-option>
+                                <el-option label="水平三" value="3"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                        <el-row v-if="formStructural.lqc_inputlevel==1">
+                            <el-form-item label="动态压缩模量实验结果（MPa）" prop="dtysml_1">
+                                <el-input v-model="formStructural.dtysml_1"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <div v-if="formStructural.lqc_inputlevel==2">
+                            <el-row>
+                                <el-form-item label="沥青混合料动态模量（MPa）" prop="lqhhldtml_2">
+                                    <el-input v-model="formStructural.lqhhldtml_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青动态剪切模量（MPa）" prop="lqdtjqml_2">
+                                    <el-input v-model="formStructural.lqdtjqml_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青混合料空隙率（%）" prop="lqhhlkxl_2">
+                                    <el-input v-model="formStructural.lqhhlkxl_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="沥青混合料油石比（%）" prop="lqhhlysb_2">
+                                    <el-input v-model="formStructural.lqhhlysb_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="粗集料松装间隙率（%）" prop="cjlszjxl_2">
+                                    <el-input v-model="formStructural.cjlszjxl_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="频率（Hz）" prop="frequency_2">
+                                    <el-input v-model="formStructural.frequency_2"/>
+                                </el-form-item>
+                            </el-row>
+
+                        </div>
+
+
+                        <el-row v-if="formStructural.lqc_inputlevel==3">
+                            <el-form-item label="沥青混合料动态模量（MPa）" prop="lqhhldtml_3">
+                                <el-input v-model="formStructural.lqhhldtml_3"/>
+                            </el-form-item>
+                        </el-row>
+
+
+                    </div>
+
+                    <!--编辑框的第三块内容-->
+                    <div v-if="formStructural.materialType==1">
+                        <hr>
+                        <div style="font-size: 20px">
+                            永久变形相关参数
+                        </div>
+                        <el-row>
+                            <el-form-item label="车辙试验试件的厚度（mm）" prop="chezhe_hd">
+                                <el-input v-model="formStructural.chezhe_hd"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="车辙试验永久变形量" prop="chezhe_yjbxl">
+                                <el-input v-model="formStructural.chezhe_yjbxl"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="沥青混合量的贯入强度" prop="lqhhl_grqd">
+                                <el-input v-model="formStructural.lqhhl_grqd"/>
+                            </el-form-item>
+                        </el-row>
+                    </div>
+
+                    <!--粒料材料特有-->
+                    <div v-if="formStructural.materialType==3">
+                        <!--                                    分割线-->
+                        <hr>
+                        <div style="font-size: 20px">
+                            粒料材料模量
+                        </div>
+                        <el-row>
+                            <el-form-item label="粒料材料回弹模量（MPa）" prop="llclhtml">
+                                <el-input v-model="formStructural.llclhtml"/>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="湿度调整系数" prop="sdtzxs">
+                                <el-input v-model="formStructural.sdtzxs"/>
+                            </el-form-item>
+                        </el-row>
+
+                    </div>
+
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisibleEdit3 = false">取消</el-button>
+                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                </div>
+
+            </el-dialog>
+        </div>
+
+        <!-- 编辑标签弹层4 -->
+        <div class="add-form" >
+            <el-dialog title="土基类材料参数信息" :visible.sync="dialogFormVisibleEdit4" width="45%">
+                <el-form ref="dataAddForm" :model="formStructural" :rules="rules" label-position="right" label-width="215px" style="width: 500px">
+<!--                <el-form ref="dataAddForm" :model="formStructural" :rules="rules" label-position="right" label-width="150px" style="width: 400px">-->
+
+                    <el-row>
+                        <el-form-item label="层位" prop="horizon">
+                            <el-select v-model="formStructural.horizon" placeholder="路基">
+                                <el-option label="路基" value="4"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-row>
+
+                    <el-row>
+
+                        <el-form-item label="泊松比" prop="poissonRatio">
+                            <el-input v-model="formStructural.poissonRatio"/>
+                        </el-form-item>
+
+                    </el-row>
+
+                    <el-row>
+                        <el-form-item label="说明">
+                            <el-input v-model="formStructural.description" type="textarea"></el-input>
+                        </el-form-item>
+                    </el-row>
+
+                    <!--                                弹出框第二块内容-->
+                    <div>
+                        <hr>
+                        <div style="font-size: 20px">
+                            土基模量
+                        </div>
+                        <el-form-item label="回填模量输入水平" prop="html_inputlevel">
+                            <el-select v-model="formStructural.html_inputlevel">
+                                <el-option label="水平一" value="1"></el-option>
+                                <el-option label="水平二" value="2"></el-option>
+                                <el-option label="水平三" value="3"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                        <div v-if="formStructural.html_inputlevel==1">
+                            <el-row>
+                                <el-form-item label="土基回弹模量（MPa）" prop="tjhtml">
+                                    <el-input v-model="formStructural.tjhtml"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="湿度调整系数" prop="sdtzxs_luji">
+                                    <el-input placeholder="1.0" v-model="formStructural.sdtzxs_luji"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="干湿与冻融循环作用折减系数" prop="gsydrxhzyzjxs">
+                                    <el-input placeholder="1.0" v-model="formStructural.gsydrxhzyzjxs"/>
+                                </el-form-item>
+                            </el-row>
+
+                        </div>
+
+                        <div v-if="formStructural.html_inputlevel==2">
+                            <el-row>
+                                <el-form-item label="土基回弹模量（MPa）" prop="tjhtml">
+                                    <el-input v-model="formStructural.tjhtml"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="CBR" prop="cbr_luji">
+                                    <el-input v-model="formStructural.cbr_luji">
+                                        <el-button slot="append" @click="">计算模量</el-button>
+                                    </el-input>
+                                </el-form-item>
+
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="湿度调整系数" prop="sdtzxs_luji">
+                                    <el-input placeholder="1.0" v-model="formStructural.sdtzxs_luji"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="干湿与冻融循环作用折减系数" prop="gsydrxhzyzjxs">
+                                    <el-input placeholder="1.0" v-model="formStructural.gsydrxhzyzjxs"/>
+                                </el-form-item>
+                            </el-row>
+                        </div>
+
+                        <div v-if="formStructural.html_inputlevel==3">
+                            <el-row>
+                                <el-form-item label="土基回弹模量（MPa）" prop="tjhtml">
+                                    <el-input v-model="formStructural.tjhtml"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="湿度调整系数" prop="sdtzxs_luji">
+                                    <el-input placeholder="1.0" v-model="formStructural.sdtzxs_luji"/>
+                                </el-form-item>
+                            </el-row>
+
+                            <el-row>
+                                <el-form-item label="干湿与冻融循环作用折减系数" prop="gsydrxhzyzjxs">
+                                    <el-input placeholder="1.0" v-model="formStructural.gsydrxhzyzjxs"/>
+                                </el-form-item>
+                            </el-row>
+                        </div>
+
+                    </div>
+
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisibleEdit4 = false">取消</el-button>
+                    <el-button type="primary" @click="handleAdd()">确定</el-button>
+                </div>
+            </el-dialog>
+        </div>
+
+
+    </div>
+</div>
+
+</body>
+
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: '#app',
+        data() {
+            return {
+                // 添加数据对话框是否展示的标记
+                dialogFormVisible: false,
+                dialogFormVisible2: false,
+                dialogFormVisible3: false,
+
+                activeName:['1','2','3','4'],
+
+                tableStructural: [{
+                    horizon: '面层',
+                    materialType: '沥青混合料类型',
+                    materialName: 'AC15',
+                    thickness: '40',
+                    poissonRatio: '0.25',
+                    modulus: '18000',
+                    description: '静态数据',
+                }, {
+                    horizon: '面层',
+                    materialType: '沥青混合料类型',
+                    materialName: 'SMA15',
+                    thickness: '60',
+                    poissonRatio: '0.3',
+                    modulus: '16000',
+                    description: '静态数据2',
+                }],
+
+                tableStructural2: [{
+                    horizon: '基层',
+                    materialType: '无机结合料类型材料',
+                    materialName: 'AC15',
+                    thickness: '40',
+                    poissonRatio: '0.25',
+                    modulus: '18000',
+                    description: '静态数据',
+                }, {
+                    horizon: '基层',
+                    materialType: '粒料类材料',
+                    materialName: 'SMA15',
+                    thickness: '500',
+                    poissonRatio: '0.3',
+                    modulus: '16000',
+                    description: '静态数据2',
+                }],
+
+                tableStructural3: [{
+                    horizon: '底基层',
+                    materialType: '沥青混合料类型',
+                    materialName: 'AC15',
+                    thickness: '30',
+                    poissonRatio: '0.25',
+                    modulus: '18000',
+                    description: '静态数据',
+                }, {
+                    horizon: '底基层',
+                    materialType: '无机结合料类型材料',
+                    materialName: 'SMA15',
+                    thickness: '200',
+                    poissonRatio: '0.3',
+                    modulus: '16000',
+                    description: '静态数据2',
+                }],
+                tableStructural4: [{
+                    horizon: '路基',
+                    materialType: '土层',
+                    materialName: '',
+                    thickness: '',
+                    poissonRatio: '0',
+                    modulus: '0',
+                    description: '静态数据',
+                }],
+
+                formStructural: {
+                    sid: '',
+                    horizon: '',
+                    materialType: '',
+                    materialName: '',
+                    thickness: '',
+                    poissonRatio: '',
+                    modulus: '',
+                    description: '',
+                    proId: '',
+
+                    chezhe_hd: '',
+                    chezhe_yjbxl: '',
+                    lqhhl_grqd: '',
+                    lqc_inputlevel: '',
+                    dtysml_1: '',
+
+                    lqhhldtml_2: '',
+                    lqdtjqml_2: '',
+                    lqhhlkxl_2: '',
+                    lqhhlysb_2: '',
+                    cjlszjxl_2: '',
+                    frequency_2: '',
+
+                    lqhhldtml_3: '',
+
+                    llclhtml: '',
+                    sdtzxs: '',
+
+                    html_inputlevel:'',
+                    tjhtml:'',
+                    sdtzxs_luji:'',
+                    gsydrxhzyzjxs:'',
+                    cbr_luji:'',
+
+
+                },//表单数据
+                // dialogFormVisible: false,//增加表单是否可见
+                dialogFormVisibleEdit: false,//编辑表单是否可见
+                dialogFormVisibleEdit2: false,//编辑表单是否可见
+                dialogFormVisibleEdit3: false,//编辑表单是否可见
+                dialogFormVisibleEdit4: false,//编辑表单是否可见
+                rules: {//校验规则
+
+
+                    horizon: [{required: true, message: '项目层位为必填项', trigger: 'change'}],
+                    materialType: [{required: true, message: '材料类型为必填项', trigger: 'change'}],
+                    materialName: [{required: true, message: '名称为必填项', trigger: 'blur'}],
+                    thickness: [{required: true, message: '厚度为必填项', trigger: 'blur'}],
+                    poissonRatio: [{required: true, message: '泊松比为必填项', trigger: 'blur'}],
+                    modulus: [{required: true, message: '模量为必填项', trigger: 'blur'}],
+
+                    chezhe_hd: [{required: true, message: '厚度为必填项', trigger: 'blur'}],
+                    chezhe_yjbxl: [{required: true, message: '永久变形量为必填项', trigger: 'blur'}],
+                    lqhhl_grqd: [{required: true, message: '贯入强度为必填项', trigger: 'blur'}],
+                    dtysml_1: [{required: true, message: '动态模量为必填项', trigger: 'blur'}],
+
+                    lqhhldtml_2: [{required: true, message: '动态模量为必填项', trigger: 'blur'}],
+                    lqdtjqml_2: [{required: true, message: '剪切模量为必填项', trigger: 'blur'}],
+                    lqhhlkxl_2: [{required: true, message: '空隙率为必填项', trigger: 'blur'}],
+                    lqhhlysb_2: [{required: true, message: '油石比为必填项', trigger: 'blur'}],
+                    cjlszjxl_2: [{required: true, message: '粗集料松装间隙率为必填项', trigger: 'blur'}],
+                    frequency_2: [{required: true, message: '频率为必填项', trigger: 'blur'}],
+
+                    lqhhldtml_3: [{required: true, message: '动态模量为必填项', trigger: 'blur'}],
+
+                    llclhtml: [{required: true, message: '粒料材料回弹模量为必填项', trigger: 'blur'}],
+                    sdtzxs: [{required: true, message: '湿度调整系数为必填项', trigger: 'blur'}],
+
+                    tjhtml:[{required: true, message: '"土基回弹模量为必填项', trigger: 'blur'}],
+                    sdtzxs_luji:[{required: true, message: '湿度调整系数为必填项', trigger: 'blur'}],
+                    gsydrxhzyzjxs:[{required: true, message: '干湿与冻融循环作用折减系数为必填项', trigger: 'blur'}],
+                },
+                //钩子函数，VUE对象初始化完成后自动执行
+                created() {
+                },
+
+            }
+        },
+
+        methods: {
+            // 复选框选中后执行的方法
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+
+                console.log(this.multipleSelection)
+            },
+            //编辑
+            handleEdit() {
+
+            },
+            //添加
+            handleAdd() {
+                this.$refs['dataAddForm'].validate((valid) => {
+                    if(valid){
+                    //    校验通过
+                        console.log(this.formStructural);
+                        axios.post("/checkitem/add.do",this.formStructural)
+                        .then((res) => {
+                            if(res.data.flag){
+                                this.findPage();
+                                this.$message({
+                                    message:res.data.message,
+                                    type:'success'
+                                });
+                            }else{
+                                this.$message.error(res.data.message);
+                            }
+                        });
+                    }else{
+                    //    校验不通过
+                        this.$message.error("数据校验失败");
+                        return false;
+                    }
+                })
+            },
+            //分页查询
+            findPage() {
+            },
+            // 重置表单
+            resetForm() {
+                this.formStructural = {};
+            },
+            // 弹出添加窗口
+            handleCreate() {
+                this.dialogFormVisible = true;
+                this.resetForm();
+            },
+            // 弹出添加窗口2
+            handleCreate2() {
+                this.dialogFormVisible2 = true;
+                this.resetForm();
+            },
+            // 弹出添加窗口3
+            handleCreate3() {
+                this.dialogFormVisible3 = true;
+                this.resetForm();
+            },
+
+            // 弹出编辑窗口
+            handleUpdate(row) {
+                this.dialogFormVisibleEdit = true;
+            },
+            // 弹出编辑窗口2
+            handleUpdate2(row) {
+                this.dialogFormVisibleEdit2 = true;
+            },
+            // 弹出编辑窗口3
+            handleUpdate3(row) {
+                this.dialogFormVisibleEdit3 = true;
+            },
+            // 弹出编辑窗口4
+            handleUpdate4(row) {
+                this.dialogFormVisibleEdit4 = true;
+            },
+            //切换页码
+            handleCurrentChange(currentPage) {
+            },
+            // 删除
+            handleDelete(row) {
+                alert(row.id);
+            }
+
+        },
+
+    })
+</script>
+
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>沥青路面结构设计</title>
+    <meta name="description" content="沥青路面结构设计">
+    <meta name="keywords" content="沥青路面结构设计">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style type="text/css">
+
+
+    </style>
+</head>
+
+<body class="hold-transition">
+
+    <div id="app">
+
+        <div class="content-header">
+            <h1>结构与材料参数</h1>
+            <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+                <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+                <el-breadcrumb-item>结构与材料参数</el-breadcrumb-item>
+<!--                <el-breadcrumb-item>车辆类型分布系数</el-breadcrumb-item>-->
+            </el-breadcrumb>
+        </div>
+        <div class="app-container">
+            <div class="box">
+                <el-collapse accordion>
+                    <el-collapse-item>
+                        <template slot="title">
+                            面层<i class="header-icon el-icon-info"></i>
+                        </template>
+                        <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
+                        <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                    </el-collapse-item>
+
+                </el-collapse>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+
+<script>
+var vue = new Vue({
+    el: '#app',
+    data(){
+        return {
+        }
+    },
+
+    methods: {
+    },
+
+})
+</script>
+
+</html>

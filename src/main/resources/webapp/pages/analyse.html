@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>沥青路面结构设计</title>
+    <meta name="description" content="沥青路面结构设计">
+    <meta name="keywords" content="沥青路面结构设计">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style type="text/css">
+        .el-input__inner{
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+        <h1>分析及计算书下载</h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>分析及计算书下载</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <div class="app-container">
+        <div class="box">
+
+
+
+            <div>
+                <el-form
+                        :model="dataList"
+                        ref="ruleForm"
+                        label-width="10px"
+                        class="demo-ruleForm">
+
+                    <el-form-item>
+
+                            <!-- 列表 -->
+                        <div style="width: 800px">
+                            <el-table
+                                    :data="this.dataList.moduleList[0].content==''?tableData:dataList.moduleList" ref="topictable" border stripe :max-height="tableHeight"
+                                    :row-style="{height:0+'px'}" :cell-style="{padding:3+'px'}"
+                                    row-key="Id" class="tableBox"
+                                    :tree-props="{children: 'children'}"
+                                    :header-cell-style="{background:'#50a2e2',color:'#fff'}">
+                                <!-- 展开列 -->
+
+                                <!-- 索引列 -->
+
+                                <el-table-column label="验算内容" prop="content" align="center">
+                                    <el-input class="el-input" v-model="dataList.moduleList[0].content"/>
+                                </el-table-column>
+
+                                <el-table-column label="计算值" prop="calculate" align="center">
+                                    <el-form-item label-width="0px">
+                                        <el-input class="el-input" v-model="dataList.moduleList[0].calculate"/>
+                                    </el-form-item>
+                                </el-table-column>
+
+                                <el-table-column label="对比值" prop="contrast" align="center">
+                                    <el-form-item label-width="0px">
+                                        <el-input class="el-input" v-model="dataList.moduleList[0].contrast"/>
+                                    </el-form-item>
+                                </el-table-column>
+
+                                <el-table-column label="是否满足" prop="contrast" align="center">
+                                    <el-form-item label-width="0px">
+                                        <el-input class="el-input" v-model="dataList.moduleList[0].satisfy"/>
+                                    </el-form-item>
+                                </el-table-column>
+
+
+                                </el-table-column>
+
+                            </el-table>
+                        </div>
+
+                    </el-form-item>
+                    <!--保存重置按钮-->
+                    <el-form-item>
+                        <el-button type="primary" @click="analysing()">开始分析</el-button>
+                        <el-button type="primary" @click="download()">生成计算书</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+
+            <div class="add-form">
+                <el-dialog title="分析参数选择" :visible.sync="dialogFormVisible" width="40%">
+                    <el-form class="form1" ref="dataAddForm" :model="formData" :rules="rules" label-position="right"
+                             label-width="150px" style="width: 450px">
+                        <!--隐藏域，提交id-->
+                        <input type="hidden" name="id" value="${formData.id}">
+
+                        <el-row>
+                            <el-form-item label="选择轴载水平：" prop="level">
+                                <el-select v-model="formData.level">
+                                    <el-option label="水平一" value="0"></el-option>
+                                    <el-option label="水平二" value="1"></el-option>
+                                    <el-option label="水平三" value="2"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="是否迭代计算:">
+                                <el-checkbox v-model="formData.checked"></el-checkbox>
+                            </el-form-item>
+                        </el-row>
+
+                        <el-row>
+                            <el-form-item label="选择迭代层：" prop="iteration">
+                                <el-select v-model="formData.iteration">
+                                    <el-option label="第二层基层" value="0"></el-option>
+                                    <el-option label="第三层底基层" value="1"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-row>
+
+
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="dialogFormVisible = false">关闭</el-button>
+                        <el-button type="primary" @click="analysing()">开始分析</el-button>
+                    </div>
+                </el-dialog>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+</body>
+
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: '#app',
+        data(){
+            return {
+
+                // table高度
+                tableHeight: null,
+
+                dialogFormVisible: false,
+                formData:{
+                    level:'',
+                    iteration:'',
+                    layer:''
+                },
+                dataList: {
+                    // 日志列表
+                    moduleList: [{
+                        content:'',
+                        contrast: '',
+                        satisfy: '',
+                        calculate:'',
+                    },{
+                        content:'',
+                        contrast: '',
+                        satisfy: '',
+                        calculate:'',
+                    }]
+                },
+
+                moduleListRules: {
+                    // thickness: [{ required: true, message: '请输入合理系数', trigger: 'blur' }],
+                    // poissonRatio: [{ required: true, message: '请输入合理系数', trigger: 'blur' }],
+                    // modulus: [{ required: true, message: '请输入合理比例', trigger: 'blur' }],
+                    // cengjian: [{ required: true, message: '请输入合理比例', trigger: 'blur' }],
+
+                },
+            }
+
+        },
+
+        mounted(){
+            //当页面加载完成后，发送异步请求，获取数据
+            // var _this = this;
+            // alert("mounted")
+            // axios({
+            //     method:"get",
+            //     url:"http://localhost:8080/asphalt-demo1/vehicleDistribute/selectById?proId=1"
+            // }).then((resp) => {
+            //     if (resp.data != null){
+            //         this.queryData = resp.data;
+            //
+            //
+            //     }
+            // })
+        },
+
+        methods: {
+            download(){
+                window.location.href="沥青路面信息文件1.doc";
+                this.$message({
+                    message: '生成成功！',
+                    type: 'success'
+                });
+            },
+            // 提交表单
+            submitForm(formName,dataList) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        alert('submit!');
+                        // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                        // console.log(this.moduleList);
+                        axios({
+                            method:"post",
+                            url:"http://localhost:8080/asphalt-demo1/vehicleDistribute/add",
+                            data:this.dataList // 需要改动
+                        }).then( (resp) => {
+                            //响应数据的处理逻辑
+                            if(resp.data == "success"){
+                                //添加成功
+                                //关闭窗口
+                                this.$message({
+                                    message: '恭喜你，添加成功',
+                                    type: 'success'
+                                });
+                            }else if (resp.data == "update success"){
+                                this.$message({
+                                    message: '恭喜你，修改成功',
+                                    type: 'success'
+                                });
+                            }
+                        })
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            // 重置表单
+            resetForm() {
+                this.formData={};
+            },//添加
+            handleAdd() {
+            },
+            analyseForm(){
+                    this.resetForm();
+                    // this.dialogFormVisible=true;
+                    // location.target="right"
+            },
+            analysing(){
+
+                this.dataList.moduleList[0].content='沥青层车辙（mm）';
+                this.dataList.moduleList[0].contrast=10.75;
+                this.dataList.moduleList[0].calculate=15.00;
+                this.dataList.moduleList[0].satisfy="是";
+
+                this.dataList.moduleList[1].content='半刚性层疲劳开裂对应的累积当量轴次';
+                this.dataList.moduleList[1].contrast='306,970,111';
+                this.dataList.moduleList[1].calculate='128,956,042';
+                this.dataList.moduleList[1].satisfy="是";
+
+                // this.dialogFormVisible = false;
+            }
+
+        },
+
+    })
+</script>
+
+</html>

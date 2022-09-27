@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>沥青路面结构设计</title>
+    <meta name="description" content="沥青路面结构设计">
+    <meta name="keywords" content="沥青路面结构设计">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style type="text/css">
+
+
+    </style>
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+        <h1>轴重及当量轴载换算系数<small>水平二</small></h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>轴重及当量轴载换算系数</el-breadcrumb-item>
+            <el-breadcrumb-item>水平二</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <div class="app-container">
+        <div class="box">
+
+            <h4>输入不同控制指标下的当量轴载换算系数</h4>
+            <el-collapse accordion>
+                <el-collapse-item>
+                    <template slot="title">
+                        <!--box框-->
+                        <p @click="showList(1)">
+                            沥青层永久变形、疲劳开裂<i class="header-icon el-icon-info"></i>
+                        </p>
+                    </template>
+                    <div>
+                        <el-form
+                                :model="dataEALF21"
+                                ref="ealfLevel21"
+                                label-width="10px"
+                                class="demo-ruleForm">
+                            <el-form-item>
+                                <p>非满载车、满载车当量轴载换算系数</p>
+                                <el-table
+                                        :data="dataEALF21.moduleList" ref="topictable" border stripe :max-height="tableHeight"
+                                        :row-style="{height:0+'px'}" :cell-style="{padding:3+'px'}"
+                                        row-key="Id"  class="tableBox"
+                                        :tree-props="{children: 'children'}" :header-cell-style="{background:'#50a2e2',color:'#fff'}">
+                                    <!-- 展开列 -->
+
+                                    <!-- 索引列 -->
+                                    <!--                                <el-table-column type="index" label="序号"></el-table-column>-->
+                                    <el-table-column label="车辆类型" prop="vehicleType" align="center" width="240"></el-table-column>
+                                    <el-table-column class-name="coeff" label="非满载车" align="center">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.NFcoefficient'" :rules="moduleListRules.NFcoefficient">
+                                                <el-input class="el-input" v-model="scope.row.NFcoefficient" placeholder="系数"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="coeff" label="满载车" align="center">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.Fcoefficient'" :rules="moduleListRules.Fcoefficient">
+                                                <el-input class="el-input" v-model="scope.row.Fcoefficient" placeholder="系数"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-form-item>
+                            <!--保存重置按钮-->
+                            <el-form-item>
+                                <el-button type="primary" @click="submitForm1('ealfLevel21','dataEALF21')">保存</el-button>
+                                <el-button @click="resetForm('ealfLevel21')">重置</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                </el-collapse-item>
+
+                <el-collapse-item>
+                    <template slot="title">
+                        <p @click="showList(2)">
+                            无机结合料层疲劳开裂<i class="header-icon el-icon-info"></i>
+                        </p>
+                    </template>
+                    <div>
+                        <el-form
+                                :model="dataEALF22"
+                                ref="ealfLevel22"
+                                label-width="10px"
+                                class="demo-ruleForm">
+                            <el-form-item>
+                                <p>非满载车、满载车当量轴载换算系数</p>
+                                <el-table
+                                        :data="dataEALF22.moduleList" ref="topictable" border stripe :max-height="tableHeight"
+                                        :row-style="{height:0+'px'}" :cell-style="{padding:3+'px'}"
+                                        row-key="Id"  class="tableBox"
+                                        :tree-props="{children: 'children'}" :header-cell-style="{background:'#50a2e2',color:'#fff'}">
+                                    <!-- 展开列 -->
+
+                                    <!-- 索引列 -->
+                                    <!--                                <el-table-column type="index" label="序号"></el-table-column>-->
+                                    <el-table-column label="车辆类型" prop="vehicleType" align="center" width="240"></el-table-column>
+                                    <el-table-column class-name="coeff" label="非满载车" align="center">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.NFcoefficient'" :rules="moduleListRules.NFcoefficient">
+                                                <el-input class="el-input" v-model="scope.row.NFcoefficient" placeholder="系数"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="coeff" label="满载车" align="center">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.Fcoefficient'" :rules="moduleListRules.Fcoefficient">
+                                                <el-input class="el-input" v-model="scope.row.Fcoefficient" placeholder="系数"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-form-item>
+                            <!--保存重置按钮-->
+                            <el-form-item>
+                                <el-button type="primary" @click="submitForm2('ealfLevel22','dataEALF22')">保存</el-button>
+                                <el-button @click="resetForm('ealfLevel22')">重置</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                </el-collapse-item>
+
+                <el-collapse-item>
+                    <template slot="title">
+                        <p @click="showList(3)">
+                            土基顶面压应变<i class="header-icon el-icon-info"></i>
+                        </p>
+                    </template>
+                    <div>
+                        <el-form
+                                :model="dataEALF23"
+                                ref="ealfLevel23"
+                                label-width="10px"
+                                class="demo-ruleForm">
+                            <el-form-item>
+                                <p>非满载车、满载车当量轴载换算系数</p>
+                                <el-table
+                                        :data="dataEALF23.moduleList" ref="topictable" border stripe :max-height="tableHeight"
+                                        :row-style="{height:0+'px'}" :cell-style="{padding:3+'px'}"
+                                        row-key="Id"  class="tableBox"
+                                        :tree-props="{children: 'children'}" :header-cell-style="{background:'#50a2e2',color:'#fff'}">
+                                    <!-- 展开列 -->
+
+                                    <!-- 索引列 -->
+                                    <!--                                <el-table-column type="index" label="序号"></el-table-column>-->
+                                    <el-table-column label="车辆类型" prop="vehicleType" align="center" width="240"></el-table-column>
+                                    <el-table-column class-name="coeff" label="非满载车" align="center">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.NFcoefficient'" :rules="moduleListRules.NFcoefficient">
+                                                <el-input class="el-input" v-model="scope.row.NFcoefficient" placeholder="系数"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class-name="coeff" label="满载车" align="center">
+                                        <template slot-scope="scope">
+                                            <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.Fcoefficient'" :rules="moduleListRules.Fcoefficient">
+                                                <el-input class="el-input" v-model="scope.row.Fcoefficient" placeholder="系数"/>
+                                            </el-form-item>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-form-item>
+                            <!--保存重置按钮-->
+                            <el-form-item>
+                                <el-button type="primary" @click="submitForm3('ealfLevel23','dataEALF23')">保存</el-button>
+                                <el-button @click="resetForm('ealfLevel23')">重置</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                </el-collapse-item>
+            </el-collapse>
+
+            <h4>非满载车、满载车比例（%）</h4>
+            <div>
+                <el-form
+                        :model="dataProportion2"
+                        ref="dataProportion2"
+                        label-width="10px"
+                        class="demo-ruleForm">
+                    <el-form-item>
+                        <el-table
+                                :data="dataProportion2.moduleList" ref="topictable" border stripe :max-height="tableHeight"
+                                :row-style="{height:0+'px'}" :cell-style="{padding:3+'px'}"
+                                row-key="Id"  class="tableBox"
+                                :tree-props="{children: 'children'}" :header-cell-style="{background:'#50a2e2',color:'#fff'}">
+                            <!-- 展开列 -->
+
+                            <!-- 索引列 -->
+                            <!--                                <el-table-column type="index" label="序号"></el-table-column>-->
+                            <el-table-column label="车辆类型" prop="vehicleType" align="center" width="240"></el-table-column>
+                            <el-table-column class-name="proportion" label="非满载车" align="center">
+                                <template slot-scope="scope">
+                                    <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.NFproportion'" :rules="moduleListRules.NFproportion">
+                                        <el-input class="el-input" v-model="scope.row.NFproportion" placeholder="比例"/>
+                                    </el-form-item>
+                                </template>
+                            </el-table-column>
+                            <el-table-column class-name="proportion" label="满载车" align="center">
+                                <template slot-scope="scope">
+                                    <el-form-item label-width="0px" :prop="'moduleList.' + scope.$index + '.Fproportion'" :rules="moduleListRules.Fproportion">
+                                        <el-input class="el-input" v-model="scope.row.Fproportion" placeholder="比例"/>
+                                    </el-form-item>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-form-item>
+                    <!--保存重置按钮-->
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForms('dataProportion2','dataProportion2')">保存</el-button>
+                        <el-button @click="resetForm('dataProportion2')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+</body>
+
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: '#app',
+        data(){
+            return {
+                // table高度
+                tableHeight: null,
+                proid:'',
+                conindex:'',
+
+                flag1:false,
+                flag2:false,
+                flag3:false,
+                flag:false,
+
+                // 沥青层EALF表单数据
+                dataEALF21: {
+                    // 日志列表
+                    moduleList: [{
+                        vehicleType: '车型2',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型3',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型4',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型5',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型6',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型7',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型8',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型9',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型10',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    }, {
+                        vehicleType: '车型11',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    }]
+                },
+                // 无机层EALF表单数据
+                dataEALF22: {
+                    // 日志列表
+                    moduleList: [{
+                        vehicleType: '车型2',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型3',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型4',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型5',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型6',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型7',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型8',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型9',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型10',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    }, {
+                        vehicleType: '车型11',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    }]
+                },
+                // 土基顶面EALF表单数据
+                dataEALF23: {
+                    // 日志列表
+                    moduleList: [{
+                        vehicleType: '车型2',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型3',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型4',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型5',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型6',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型7',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型8',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型9',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    },{
+                        vehicleType: '车型10',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    }, {
+                        vehicleType: '车型11',
+                        NFcoefficient: '',
+                        Fcoefficient: ''
+                    }]
+                },
+                // 非满载车、满载车比例
+                dataProportion2: {
+                    // 日志列表
+                    moduleList: [{
+                        vehicleType: '车型2',
+                        NFproportion: '',
+                        Fproportion: ''
+                    },{
+                        vehicleType: '车型3',
+                        NFproportion: '',
+                        Fproportion: ''
+                    },{
+                        vehicleType: '车型4',
+                        NFproportion: '',
+                        Fproportion: ''
+                    },{
+                        vehicleType: '车型5',
+                        NFproportion: '',
+                        Fproportion: ''
+                    },{
+                        vehicleType: '车型6',
+                        NFproportion: '',
+                        Fproportion: ''
+                    },{
+                        vehicleType: '车型7',
+                        NFproportion: '',
+                        Fproportion: ''
+                    },{
+                        vehicleType: '车型8',
+                        NFproportion: '',
+                        Fproportion: ''
+                    },{
+                        vehicleType: '车型9',
+                        NFproportion: '',
+                        Fproportion: ''
+                    },{
+                        vehicleType: '车型10',
+                        NFproportion: '',
+                        Fproportion: ''
+                    }, {
+                        vehicleType: '车型11',
+                        NFproportion: '',
+                        Fproportion: ''
+                    }]
+                },
+                dataList:[
+                    {
+                        proId:0,
+                        vehicleType: '0',
+                        controlIndicator:'',
+                        type2: '',
+                        type3: '',
+                        type4: '',
+                        type5: '',
+                        type6: '',
+                        type7: '',
+                        type8: '',
+                        type9: '',
+                        type10: '',
+                        type11: '',
+                    },
+                    {
+                        proId: 0,
+                        vehicleType: '1',
+                        controlIndicator:'',
+                        type2:'',
+                        type3:'',
+                        type4:'',
+                        type5:'',
+                        type6:'',
+                        type7:'',
+                        type8:'',
+                        type9:'',
+                        type10:'',
+                        type11:'',
+                    }
+                ],
+                moduleListRules: {
+                    NFcoefficient: [{ required: true, message: '请输入合理系数', trigger: 'blur' }],
+                    Fcoefficient: [{ required: true, message: '请输入合理系数', trigger: 'blur' }],
+                    NFproportion: [{ required: true, message: '请输入合理比例', trigger: 'blur' }],
+                    Fproportion: [{ required: true, message: '请输入合理比例', trigger: 'blur' }],
+
+                },
+                // queryData:[{type2:''},{type3:''},{type4:''},{type5:''},{type6:''},
+                //     {type7:''},{type8:''},{type9:''},{type10:''},{type11:''}],
+
+                queryData2:[
+                    {type2:'',type3:'',type4:'',type5:'',type6:'',type7:'',type8:'',type9:'',type10:'',type11:''},
+                    {type2:'',type3:'',type4:'',type5:'',type6:'',type7:'',type8:'',type9:'',type10:'',type11:''}
+                ]
+            }
+
+        },
+
+        mounted(){
+            //当页面加载完成后，发送异步请求，获取数据
+            // var _this = this;
+            // alert("mounted")
+            this.proid = localStorage.getItem("key");
+            axios({
+                method:"get",
+                url:"http://localhost:8080/vehiclepro/list/"+this.proid,
+            }).then((resp) => {
+                if (resp.data.data != null){
+                    this.flag = true;
+                    if(resp.data.data[0].vehicleType == '0'){
+                        this.queryData2[0] = resp.data.data[0];
+                        this.queryData2[1] = resp.data.data[1];
+                    }else{
+                        this.queryData2[0] = resp.data.data[1];
+                        this.queryData2[1] = resp.data.data[0];
+                    }
+                    this.dataTrans();
+                }
+            })
+        },
+
+        methods: {
+            //提交固定表单
+            submitForms(formName,dataList) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                        this.dataList[0].proId = localStorage.getItem("key");
+                        this.dataList[1].proId = localStorage.getItem("key");
+                        for(let i=2;i<12;i++){
+                            this.dataList[0]['type' + i] = this.dataProportion2.moduleList[i-2].NFproportion;
+                            this.dataList[1]['type' + i] = this.dataProportion2.moduleList[i-2].Fproportion;
+                        }
+
+                        if(this.flag){
+                            axios({
+                                method:"put",
+                                url:"http://localhost:8080/vehiclepro/update",
+                                data:this.dataList // 需要改动
+                            }).then( (resp) => {
+                                //响应数据的处理逻辑
+                                if(resp.data.msg == "success"){
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        message: '恭喜你，修改成功',
+                                        type: 'success'
+                                    });
+                                    window.location.reload();
+                                }
+                            })
+                        }else{
+                            axios({
+                                method:"post",
+                                url:"http://localhost:8080/vehiclepro/save",
+                                data:this.dataList // 需要改动
+                            }).then( (resp) => {
+                                //响应数据的处理逻辑
+                                if(resp.data.msg == "success"){
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        message: '恭喜你，添加成功',
+                                        type: 'success'
+                                    });
+                                    window.location.reload();
+                                }
+                            })
+                        }
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            // 提交表单
+            submitForm1(formName,dataList) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                        this.dataList[0].proId = localStorage.getItem("key");
+                        this.dataList[1].proId = localStorage.getItem("key");
+                        this.dataList[0].controlIndicator = 0;
+                        this.dataList[1].controlIndicator = 0;
+                        for(let i=2;i<12;i++){
+                            this.dataList[0]['type' + i] = this.dataEALF21.moduleList[i-2].NFcoefficient;
+                            this.dataList[1]['type' + i] = this.dataEALF21.moduleList[i-2].Fcoefficient;
+                        }
+                        if(this.flag1){
+                            axios({
+                                method:"put",
+                                url:"http://localhost:8080/ealf/update",
+                                data:this.dataList // 需要改动
+                            }).then( (resp) => {
+                                //响应数据的处理逻辑
+                                if(resp.data.msg == "success"){
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        message: '恭喜你，修改成功',
+                                        type: 'success'
+                                    });
+                                    this.showList(1);
+                                }
+                            })
+                        }else{
+                            axios({
+                                method:"post",
+                                url:"http://localhost:8080/ealf/save",
+                                data:this.dataList // 需要改动
+                            }).then( (resp) => {
+                                //响应数据的处理逻辑
+                                if(resp.data.msg == "success"){
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        message: '恭喜你，保存成功',
+                                        type: 'success'
+                                    });
+                                    this.showList(1);
+                                }
+                            })
+                        }
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            submitForm2(formName,dataList) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                        this.dataList[0].proId = localStorage.getItem("key");
+                        this.dataList[1].proId = localStorage.getItem("key");
+                        this.dataList[0].controlIndicator = 1;
+                        this.dataList[1].controlIndicator = 1;
+                        for(let i=2;i<12;i++){
+                            this.dataList[0]['type' + i] = this.dataEALF22.moduleList[i-2].NFcoefficient;
+                            this.dataList[1]['type' + i] = this.dataEALF22.moduleList[i-2].Fcoefficient;
+                        }
+                        if(this.flag2){
+                            axios({
+                                method:"put",
+                                url:"http://localhost:8080/ealf/update",
+                                data:this.dataList // 需要改动
+                            }).then( (resp) => {
+                                //响应数据的处理逻辑
+                                if(resp.data.msg == "success"){
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        message: '恭喜你，修改成功',
+                                        type: 'success'
+                                    });
+                                    this.showList(2);
+                                }
+                            })
+                        }else{
+                            axios({
+                                method:"post",
+                                url:"http://localhost:8080/ealf/save",
+                                data:this.dataList // 需要改动
+                            }).then( (resp) => {
+                                //响应数据的处理逻辑
+                                if(resp.data.msg == "success"){
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        message: '恭喜你，添加成功',
+                                        type: 'success'
+                                    });
+                                    this.showList(2);
+                                }
+                            })
+                        }
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            submitForm3(formName,dataList) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                        this.dataList[0].proId = localStorage.getItem("key");
+                        this.dataList[1].proId = localStorage.getItem("key");
+                        this.dataList[0].controlIndicator = 2;
+                        this.dataList[1].controlIndicator = 2;
+                        for(let i=2;i<12;i++){
+                            this.dataList[0]['type' + i] = this.dataEALF23.moduleList[i-2].NFcoefficient;
+                            this.dataList[1]['type' + i] = this.dataEALF23.moduleList[i-2].Fcoefficient;
+                        }
+                        if(this.flag3){
+                            axios({
+                                method:"put",
+                                url:"http://localhost:8080/ealf/update",
+                                data:this.dataList // 需要改动
+                            }).then( (resp) => {
+                                //响应数据的处理逻辑
+                                if(resp.data.msg == "success"){
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        message: '恭喜你，修改成功',
+                                        type: 'success'
+                                    });
+                                    this.showList(3);
+                                }
+                            })
+                        }else{
+                            axios({
+                                method:"post",
+                                url:"http://localhost:8080/ealf/save",
+                                data:this.dataList // 需要改动
+                            }).then( (resp) => {
+                                //响应数据的处理逻辑
+                                if(resp.data.msg == "success"){
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        message: '恭喜你，保存成功',
+                                        type: 'success'
+                                    });
+                                    this.showList(3);
+                                }
+                            })
+                        }
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            // 重置表单
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+            dataTrans() {
+                for(let i=2;i<12;i++){
+                    this.dataProportion2.moduleList[i-2].NFproportion = this.queryData2[0]['type' + i];
+                    this.dataProportion2.moduleList[i-2].Fproportion = this.queryData2[1]['type' + i];
+                }
+
+            },
+            showList(num){
+                alert(num);
+                this.conindex = num - 1;
+                this.proid = localStorage.getItem("key"),
+                    axios({
+                        method:"get",
+                        url:"http://localhost:8080/ealf/list/"+this.proid+"/"+this.conindex,
+                    }).then((resp) => {
+                        if (resp.data.data != null){
+                            this['flag' + num] = true;
+                            if(resp.data.data[0].vehicleType == '0'){
+                                this.queryData2[0] = resp.data.data[0];
+                                this.queryData2[1] = resp.data.data[1];
+                            }else{
+                                this.queryData2[0] = resp.data.data[1];
+                                this.queryData2[1] = resp.data.data[0];
+                            }
+                            this.dataTran(num);
+                        }
+                    })
+            },
+            dataTran(num) {
+                if(num == 1){
+                    for(let i=2;i<12;i++){
+                        this.dataEALF21.moduleList[i-2].NFcoefficient = this.queryData2[0]['type' + i];
+                        this.dataEALF21.moduleList[i-2].Fcoefficient = this.queryData2[1]['type' + i];
+                    }
+
+                }else if(num == 2){
+                    for(let i=2;i<12;i++){
+                        this.dataEALF22.moduleList[i-2].NFcoefficient = this.queryData2[0]['type' + i];
+                        this.dataEALF22.moduleList[i-2].Fcoefficient = this.queryData2[1]['type' + i];
+                    }
+
+                }else{
+                    for(let i=2;i<12;i++){
+                        this.dataEALF23.moduleList[i-2].NFcoefficient = this.queryData2[0]['type' + i];
+                        this.dataEALF23.moduleList[i-2].Fcoefficient = this.queryData2[1]['type' + i];
+                    }
+                    
+                }
+
+            },
+
+        }
+
+    })
+</script>
+
+</html>

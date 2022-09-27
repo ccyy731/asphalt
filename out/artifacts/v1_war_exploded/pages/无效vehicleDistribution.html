@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>沥青路面结构设计</title>
+    <meta name="description" content="沥青路面结构设计">
+    <meta name="keywords" content="沥青路面结构设计">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="app">
+        <el-table
+                :data="tableData"
+                :header-cell-style="{ background: '#409EFF',color: '#FFFFFF' }"
+                border
+                style="width: 100%">
+            <el-table-column
+                    align="center"
+                    prop="type"
+                    label="车辆类型"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    align="center"
+                    prop="coefficient"
+                    label="系数(%)"
+                    width="380">
+            </el-table-column>
+        </el-table>
+    </div>
+
+
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+
+    <script>
+        new Vue({
+            el:"#app",
+            data() {
+                return {
+                    tableData: [{
+                        type: '类型2',
+                        coefficient: ''
+                    }, {
+                        type: '类型3',
+                        coefficient: ''
+                    }, {
+                        type: '类型4',
+                        coefficient: ''
+                    }, {
+                        type: '类型5',
+                        coefficient: ''
+                    },{
+                        type: '类型6',
+                        coefficient: ''
+                    }, {
+                        type: '类型7',
+                        coefficient: ''
+                    }, {
+                        type: '类型8',
+                        coefficient: ''
+                    },{
+                        type: '类型9',
+                        coefficient: ''
+                    }, {
+                        type: '类型10',
+                        coefficient: ''
+                    }, {
+                        type: '类型11',
+                        coefficient: ''
+                    }]
+                };
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            alert('submit!');
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        })
+    </script>
+
+</body>
+</html>

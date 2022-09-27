@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>沥青路面结构设计</title>
+    <meta name="description" content="沥青路面结构设计">
+    <meta name="keywords" content="沥青路面结构设计">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../plugins/elementui/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style type="text/css">
+        /*.table1{*/
+        /*    !*position: relative;*!*/
+        /*    top: 70px;*/
+        /*    bottom: 0px;*/
+        /*    left: 10px;*/
+        /*    right: 10px;*/
+        /*    padding: 0;*/
+        /*    width:545px;*/
+        /*    !*height:300px*!*/
+        /*}*/
+        /*.tableBox {*/
+        /*    width: 100%;*/
+        /*    max-width: 100%;*/
+        /*    margin-bottom: 20px;*/
+        /*    padding-bottom: 0;*/
+        /*}*/
+
+        /*.box {*/
+        /*    position: relative;*/
+        /*    border-radius: 3px;*/
+        /*    background: #ffffff;*/
+        /*    border-top: 3px solid #3c8dbc;*/
+        /*    padding: 10px;*/
+        /*    margin-bottom: 20px;*/
+        /*    width: 100%;*/
+        /*    height: 670px;*/
+        /*    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);*/
+        /*}*/
+
+        /*.el-input__inner{*/
+        /*    border: none;*/
+        /*    border-top-color: initial ;*/
+        /*    border-top-style: none ;*/
+        /*    border-top-width: initial ;*/
+        /*    border-right-color: initial ;*/
+        /*    border-right-style: none ;*/
+        /*    border-right-width: initial ;*/
+        /*    border-bottom-color: rgb(135, 135, 135) ;*/
+        /*    border-bottom-style: dotted ;*/
+        /*    border-bottom-width: 1px ;*/
+        /*    border-left-color: initial ;*/
+        /*    border-left-style: none ;*/
+        /*    border-left-width: initial ;*/
+        /*    border-image-source: initial ;*/
+        /*    border-image-slice: initial ;*/
+        /*    border-image-width: initial ;*/
+        /*    border-image-outset: initial ;*/
+        /*    border-image-repeat: initial ;*/
+
+        /*    padding-top: 0px;*/
+        /*    padding-right: 0px;*/
+        /*    padding-bottom: 0px;*/
+        /*    padding-left: 0px;*/
+
+        /*    border-bottom-width: 1px ;*/
+        /*    border-bottom-style: dotted ;*/
+        /*    border-bottom-color: rgb(135, 135, 135) ;*/
+
+        /*    text-align: center;*/
+        /*}*/
+
+    </style>
+
+</head>
+
+<body class="hold-transition">
+
+<div id="app">
+
+    <div class="content-header">
+        <h1>交通参数<small>车辆类型分布系数</small></h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>交通参数</el-breadcrumb-item>
+            <el-breadcrumb-item>车辆类型分布系数</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <div class="app-container">
+        <div class="box">
+            <template>
+                <div>
+
+                    <!-- 卡片视图 -->
+                    <!--                    <el-card>-->
+
+                    <el-form
+                            :model="dataList"
+                            ref="ruleForm"
+                            label-width="100px"
+                            class="demo-ruleForm">
+
+                        <!--水平123单选按钮-->
+                        <el-form-item>
+                            <el-radio v-model="radio" label="0" align="center">水平一/二</el-radio>
+                            <el-radio v-model="radio" label="1" align="center">水平三</el-radio>
+<!--                            <br>当前各车辆类型有效系数累计和为：-->
+                        </el-form-item>
+
+                        <!--选择水平三是TTC分类的选择器-->
+                        <el-form-item label="" prop="ttc" v-if="radio=='1'">
+                            <el-select v-model="dataList.ttc" placeholder="请选择" size="mini"
+                                       @change="selectTrigger(dataList.ttc)">
+                                <el-option label="TTC1" value="1"></el-option>
+                                <el-option label="TTC2" value="2"></el-option>
+                                <el-option label="TTC3" value="3"></el-option>
+                                <el-option label="TTC4" value="4"></el-option>
+                                <el-option label="TTC5" value="5"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <!-- 列表 -->
+                            <el-table
+                                    :data="dataList.moduleList" ref="topictable" border stripe :max-height="tableHeight"
+                                    :row-style="{height:0+'px'}" :cell-style="{padding:3+'px'}"
+                                    row-key="Id" class="tableBox"
+                                    :tree-props="{children: 'children'}"
+                                    :header-cell-style="{background:'#50a2e2',color:'#fff'}">
+                                <!-- 展开列 -->
+
+                                <!-- 索引列 -->
+                                <!--                                <el-table-column type="index" label="序号"></el-table-column>-->
+                                <el-table-column label="车辆类型" prop="vehicleType" align="center"
+                                                 width="240">
+                                </el-table-column>
+                                <el-table-column class-name="coeff" label="系数（%）" align="center" width="540">
+                                    <template slot-scope="scope">
+                                        <el-form-item label-width="0px"
+                                                      :prop="'moduleList.' + scope.$index + '.coefficient'"
+                                                      :rules="moduleListRules.coefficient">
+                                            <el-input class="el-input" v-model="scope.row.coefficient"
+                                                      placeholder="系数"/>
+                                        </el-form-item>
+                                    </template>
+                                </el-table-column>
+
+
+                            </el-table>
+
+
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+                            <el-button @click="resetForm('ruleForm')">重置</el-button>
+                        </el-form-item>
+                    </el-form>
+
+                    <!--                    </el-card>-->
+
+                </div>
+            </template>
+
+        </div>
+    </div>
+</div>
+
+</body>
+
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: '#app',
+        data() {
+            return {
+                ttc:'',
+                radio:'',
+                //判断新增 修改
+                flag:false,
+                dislevel: {
+                    proId: 0,
+                    level: 0,
+                    ttc: 0
+                },
+                showList:{
+                    proId: 0,
+                    level: 0,
+                    ttc: 0
+                },
+                radio: '0',
+                // table 高度
+                tableHeight: null,
+                dataList_final: {
+                    proId:0,
+                    ttc:0,
+                    level:0,
+                    type2:'',
+                    type3:'',
+                    type4:'',
+                    type5:'',
+                    type6:'',
+                    type7:'',
+                    type8:'',
+                    type9:'',
+                    type10:'',
+                    type11:''
+                },
+                // 日志列表
+                dataList: {
+                    // TTC分类
+                    ttc:'1',
+                    // 日志列表
+                    moduleList: [{
+                        vehicleType: '类型2',
+                        coefficient: ''
+                    },{
+                        vehicleType: '类型3',
+                        coefficient: ''
+                    },{
+                        vehicleType: '类型4',
+                        coefficient: ''
+                    },{
+                        vehicleType: '类型5',
+                        coefficient: ''
+                    },{
+                        vehicleType: '类型6',
+                        coefficient: ''
+                    },{
+                        vehicleType: '类型7',
+                        coefficient: ''
+                    },{
+                        vehicleType: '类型8',
+                        coefficient: ''
+                    },{
+                        vehicleType: '类型9',
+                        coefficient: ''
+                    },{
+                        vehicleType: '类型10',
+                        coefficient: ''
+                    }, {
+                        vehicleType: '类型11',
+                        coefficient: ''
+                    }]
+                },
+                moduleListRules: {
+                    // LoginName: [{required: true, message: '请输入姓名', trigger: 'blur'}],
+                    coefficient: [{required: true, message: '请输入合理系数', trigger: 'blur'}],
+                },
+                queryData: [{type2: ''}, {type3: ''}, {type4: ''}, {type5: ''}, {type6: ''},
+                    {type7: ''}, {type8: ''}, {type9: ''}, {type10: ''}, {type11: ''}],
+            }
+        },
+
+        mounted() {
+            //当页面加载完成后，发送异步请求，获取数据
+            // var _this = this;
+
+            //循环操作
+            // this.dataList['type' + i]
+            this.showList.proId = localStorage.getItem("key");
+            axios({
+                method: "post",
+                url: "http://localhost:8080/vehicle/info",
+                data:this.showList,
+            }).then((resp) => {
+                if (resp.data.data != null) {
+
+                    this.flag = true;
+
+                    this.queryData = resp.data.data;
+                    this.dataTrans();
+                }
+            })
+        },
+
+        methods: {
+            // TTC分类选择后回显数据
+            selectTrigger(val) {
+                switch (val) {
+                    case '1':
+                        // alert("TTC1");
+                        this.searchForm(1, 1);
+                        break;
+                    case '2':
+                        // alert("TTC2");
+                        this.searchForm(1, 2);
+                        break;
+                    case '3':
+                        // alert("TTC3");
+                        this.searchForm(1, 3);
+                        break;
+                    case '4':
+                        // alert("TTC4");
+                        this.searchForm(1, 4);
+                        break;
+                    case '5':
+                        // alert("TTC5");
+                        this.searchForm(1, 5);
+                        break;
+                }
+            },
+            // 对部分表单字段进行校验
+            validateField(form, index) {
+                let result = true
+                for (const item of this.$refs[form].fields) {
+                    if (item.prop.split('.')[1] === index.toString()) {
+                        this.$refs[form].validateField(item.prop, (error) => {
+                            if (error !== '') {
+                                result = false
+                            }
+                        })
+                    }
+                    if (!result) break
+                }
+                return result
+            },
+            // 对部分表单字段进行重置
+            resetField(form, index) {
+                this.$refs[form].fields.forEach(item => {
+                    if (item.prop.split('.')[1] === index.toString()) {
+                        item.resetField()
+                    }
+                })
+            },
+            // 保存
+            saveModule(item, index) {
+                // 验证
+                var i = this.validateField('ruleForm', index)
+                console.log(i)
+            },
+            // 重置
+            resetModule(item, index) {
+                this.resetField('ruleForm', index)
+            },
+            // 提交表单
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                        // console.log(this.moduleList);
+                        //转换数据为Types
+                        this.dataList_final.proId = parseInt(localStorage.getItem("key"));
+                        for(let i=2;i<12;i++){
+                            this.dataList_final['type' + i] = this.dataList.moduleList[i-2].coefficient;
+                        }
+                        if(this.flag){
+                            axios({
+                                method: "put",
+                                url: "http://localhost:8080/vehicle/update",
+                                data: this.dataList_final // 需要改动
+                            }).then((resp) => {
+                                //响应数据的处理逻辑
+                                if (resp.data.msg == "success") {
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        type: 'success',
+                                        message: '恭喜你，修改成功'
+                                    });
+                                    window.location.reload();
+
+                                }
+                            })
+                        }else{
+                            axios({
+                                method: "post",
+                                url: "http://localhost:8080/vehicle/save",
+                                data: this.dataList_final // 需要改动
+                            }).then((resp) => {
+                                //响应数据的处理逻辑
+                                if (resp.data.msg == "success") {
+                                    //添加成功
+                                    //关闭窗口
+                                    this.$message({
+                                        type: 'success',
+                                        message: '恭喜你，保存成功'
+                                    });
+                                    window.location.reload();
+
+                                }
+                            })
+                        }
+
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            searchForm(levelnum, ttcnum) {
+                // let proId = localStorage.getItem("key");
+                // 表单校验通过，发送ajax请求，将录入的数据提交到后台进行处理
+                // console.log(this.moduleList);
+                this.dislevel.proId = parseInt(localStorage.getItem("key"));
+                this.dislevel.level = levelnum;
+                this.dislevel.ttc = ttcnum;
+                // alert(this.dislevel.proId+","+this.dislevel.level+","+this.dislevel.ttc);
+                axios({
+                    method: "post",
+                    url: "http://localhost:8080/vehicle/info",
+                    data: this.dislevel
+                }).then((resp) => {
+                    //响应数据的处理逻辑
+                    if (resp.data.msg == "success") {
+                        //添加成功
+                        //关闭窗口
+                        // this.dataList.moduleList=resp.data.data;
+                        this.queryData = resp.data.data;
+                        this.dataTrans();
+
+                        this.$message({
+                            message: '恭喜你，添加成功',
+                            type: 'success'
+                        });
+                    } else if (resp.data.msg == "update success") {
+                        this.$message({
+                            message: '恭喜你，修改成功',
+                            type: 'success'
+                        });
+                    }
+                })
+            },
+            // 重置表单
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+            dataTrans() {
+
+                for(let i=2;i<12;i++){
+                    this.dataList.moduleList[i-2].coefficient = this.queryData['type' + i];
+                }
+            }
+        },
+
+    })
+</script>
+
+</html>

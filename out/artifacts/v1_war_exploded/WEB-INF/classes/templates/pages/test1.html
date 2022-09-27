@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+<!--    &lt;!&ndash; 引入样式 &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="../plugins/elementui/index.css">-->
+<!--    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">-->
+<!--    <link rel="stylesheet" href="../css/style.css">-->
+</head>
+<body>
+
+<div id="app">
+    <template>
+        <div>
+            <el-table :data="items"
+                      :key="randomKey"
+                      border
+                      :header-cell-style="{ background: '#409EFF',color: '#FFFFFF' }"
+                      @cell-dblclick="editData"
+                      style="width: 100%">
+<!--                <el-table-column label="车辆类型"-->
+<!--                                 property="type"-->
+<!--                                 width="140">-->
+<!--                    <template slot-scope="scope">-->
+<!--                        <el-input v-if="scope.row[scope.column.property + 'isShow']"-->
+<!--                                  :ref="scope.column.property"-->
+<!--                                  v-model="scope.row.type"-->
+<!--                                  @blur="alterData(scope.row,scope.column)"></el-input>-->
+<!--                        <span v-else>{{ scope.row.type }}</span>-->
+<!--                    </template>-->
+<!--                </el-table-column>-->
+
+                <el-table-column
+                        prop="type"
+                        label="车辆类型"
+                        align="center"
+                        width="240"
+                >
+                </el-table-column>
+
+                <el-table-column label="系数(%)"
+                                 property="coefficient"
+                                 width="540"
+                                 align="center"
+                >
+                    <template slot-scope="scope">
+                        <el-input v-if="scope.row[scope.column.property + 'isShow']"
+                                  :ref="scope.column.property"
+                                  v-model="scope.row.coefficient"
+                                  @blur="alterData(scope.row,scope.column)"></el-input>
+                        <span v-else>{{ scope.row.coefficient }}</span>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </template>
+</div>
+
+
+
+
+<!--&lt;!&ndash; 引入组件库 &ndash;&gt;-->
+<!--<script src="../js/vue.js"></script>-->
+<!--<script src="../plugins/elementui/index.js"></script>-->
+<!--<script type="text/javascript" src="../js/jquery.min.js"></script>-->
+
+<script src="../js/vue.js"></script>
+<script src="../element-ui/lib/index.js"></script>
+<link rel="stylesheet" href="../element-ui/lib/theme-chalk/index.css">
+
+<script>
+    new Vue({
+        el:"#app",
+        data () {
+            return {
+                items: [
+                    { type: '类型2', coefficient: '' },
+                    { type: '类型3', coefficient: '' },
+                    { type: '类型4', coefficient: '' },
+                    { type: '类型5', coefficient: '' },
+                    { type: '类型6', coefficient: '' },
+                    { type: '类型7', coefficient: '' },
+                    { type: '类型8', coefficient: '' },
+                    { type: '类型9', coefficient: '' },
+                    { type: '类型10', coefficient: '' },
+                    { type: '类型11', coefficient: '' }
+
+                ],
+                randomKey: Math.random(),
+            }
+        },
+        methods: {
+            editData (row, column) {
+                row[column.property + "isShow"] = true
+                //refreshTable是table数据改动时，刷新table的
+                this.refreshTable()
+                this.$nextTick(() => {
+                    this.$refs[column.property] && this.$refs[column.property].focus()
+                })
+
+
+            },
+            alterData (row, column) {
+                row[column.property + "isShow"] = false
+                this.refreshTable()
+            },
+            refreshTable () {
+                this.randomKey = Math.random()
+            },
+        }
+
+
+    })
+</script>
+</body>
+</html>
